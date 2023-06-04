@@ -1,20 +1,22 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 export class OpenAiService {
+  #MODEL = 'gpt-3.5-turbo';
   #openai;
 
   constructor() {
     const config = new Configuration({
-      apiKey: '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',
-      model: 'gpt-3.5-turbo',
+      apiKey: import.meta.env.VITE_API_KEY,
     });
+
+    delete config.baseOptions.headers['User-Agent'];
 
     this.#openai = new OpenAIApi(config);
   }
 
   async createNPC(userMessage) {
-    return await this.#openai.createCompletion({
-      prompt: [
+    return await this.#openai.createChatCompletion({
+      messages: [
         {
           role: 'assistant',
           content:
@@ -25,6 +27,7 @@ export class OpenAiService {
           content: userMessage,
         },
       ],
+      model: this.#MODEL,
     });
   }
 }

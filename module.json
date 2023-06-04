@@ -13,6 +13,6 @@
     "minimum": "10",
     "verified": "10"
   },
-  "esmodules": ["scripts/index.js"],
+  "esmodules": ["dist/index.js"],
   "styles": ["styles/styles.css"]
 }

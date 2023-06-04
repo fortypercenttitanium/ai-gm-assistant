@@ -6,6 +6,7 @@ export class Dashboard extends FormApplication {
   constructor() {
     super();
     this.#aiService = new OpenAiService();
+    console.log(this.#aiService);
   }
 
   static get defaultOptions() {
@@ -41,8 +42,9 @@ export class Dashboard extends FormApplication {
       if (!userMessage) return;
       console.log('USER MESSAGE | ', userMessage);
       const response = await this.#aiService.createNPC(userMessage);
-      console.log('AI RESPONSE | ', response);
-      $('#response-container').val(JSON.stringify(response));
+      const npcJson = JSON.parse(response.data.choices[0].message.content);
+      console.log('AI RESPONSE | ', npcJson);
+      $('#response-container').val(JSON.stringify(npcJson, null, 2));
     });
   }
 }
