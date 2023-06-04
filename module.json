@@ -1,0 +1,18 @@
+{
+  "id": "dm-assistant",
+  "title": "DM Assistant",
+  "description": "An AI solution to help DMs run their games by generating NPCs, encounters, loot, and more.",
+  "authors": [
+    {
+      "name": "Bender",
+      "email": "alexanderyounger@gmail.com"
+    }
+  ],
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "10",
+    "verified": "10"
+  },
+  "esmodules": ["scripts/index.js"],
+  "styles": ["styles/styles.css"]
+}
