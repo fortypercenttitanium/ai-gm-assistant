@@ -4,9 +4,9 @@ export class OpenAiService {
   #MODEL = 'gpt-3.5-turbo';
   #openai;
 
-  constructor() {
+  constructor(apiKey) {
     const config = new Configuration({
-      apiKey: import.meta.env.VITE_API_KEY,
+      apiKey,
     });
 
     delete config.baseOptions.headers['User-Agent'];

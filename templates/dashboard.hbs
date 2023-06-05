@@ -1,6 +1,13 @@
 <form>
-  <textarea id='user-message'></textarea>
-  <button type='button' id='fetch-button'>Fetch Data</button>
-  <textarea readonly id='response-container'>Type an NPC description and submit
-    to generate an NPC!</textarea>
+  {{#if apiKey}}
+    <textarea id='user-message'></textarea>
+    <button type='button' id='fetch-button'>Fetch Data</button>
+    <textarea readonly id='response-container'>Type an NPC description and
+      submit to generate an NPC!</textarea>
+  {{else}}
+    <h1>No API key was found</h1>
+    <h3>
+      Please visit the module settings to set your API key!
+    </h3>
+  {{/if}}
 </form>

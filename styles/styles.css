@@ -22,3 +22,10 @@
 #response-container {
   min-height: 400px;
 }
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 300px;
+}

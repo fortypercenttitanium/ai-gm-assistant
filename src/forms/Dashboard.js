@@ -1,12 +1,16 @@
-import { AiAssistantConfig } from '../config/AiAssistantConfig.js';
+import { DmAssistantConfig } from '../config/DmAssistantConfig.js';
 import { OpenAiService } from '../services/OpenAiService.js';
 
 export class Dashboard extends FormApplication {
   #aiService;
+  #apiKey;
   constructor() {
     super();
-    this.#aiService = new OpenAiService();
-    console.log(this.#aiService);
+    this.#apiKey = game.settings.get(
+      DmAssistantConfig.ID,
+      DmAssistantConfig.SETTINGS.OPENAI_API_KEY,
+    );
+    this.#aiService = new OpenAiService(this.#apiKey);
   }
 
   static get defaultOptions() {
@@ -14,9 +18,9 @@ export class Dashboard extends FormApplication {
 
     const overrides = {
       height: 'auto',
-      id: 'ai-assistant-dashboard',
-      template: AiAssistantConfig.TEMPLATES.DASHBOARD,
-      title: 'AI Assistant Dashboard',
+      id: 'dm-assistant-dashboard',
+      template: DmAssistantConfig.TEMPLATES.DASHBOARD,
+      title: 'DM Assistant Dashboard',
     };
 
     return foundry.utils.mergeObject(defaults, overrides);
@@ -31,7 +35,7 @@ export class Dashboard extends FormApplication {
 
   getData() {
     return {
-      aiAssistant: 'ai-assistant',
+      dmAssistant: 'dm-assistant',
     };
   }
 
