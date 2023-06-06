@@ -72,9 +72,8 @@ export class AiGmAssistantConfig {
       );
 
       if (game.user.isGM) {
-        const apiKey = localStorage.getItem('openai-api-key');
         $('#aga-assistant-button').on('click', () => {
-          new Dashboard().render(true, { apiKey });
+          new Dashboard().render(true);
         });
       }
     });
