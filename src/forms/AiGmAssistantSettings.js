@@ -77,7 +77,7 @@ export class AiGmAssistantSettings extends FormApplication {
 
   getData() {
     return {
-      dmaApiKey: game.settings.get(
+      agaApiKey: game.settings.get(
         AiGmAssistantConfig.ID,
         AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
       ),

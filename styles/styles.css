@@ -62,10 +62,12 @@
 .aga-instruction-img {
   max-height: 100px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .aga-instruction-img:hover {
-  box-shadow: 0 0 0 2px #000;
+  box-shadow: 3px 3px 3px #999;
+  transform: scale(1.05);
 }
 
 .aga-instruction-list {
@@ -87,4 +89,8 @@
   border: 1px solid #f5c6cb;
   padding: 10px;
   border-radius: 4px;
+}
+
+.aga-donate {
+  margin: 24px 12px;
 }
