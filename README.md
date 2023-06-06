@@ -1,3 +1,3 @@
-# DM Assistant
+# AI GM Assistant
 
 ## An AI solution to help DMs run their games by generating NPCs, encounters, loot, and more.
