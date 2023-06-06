@@ -1,8 +1,8 @@
 <form>
-  {{#if apiKey}}
-    <textarea id='user-message'></textarea>
-    <button type='button' id='fetch-button'>Fetch Data</button>
-    <textarea readonly id='response-container'>Type an NPC description and
+  {{#if agaApiKey}}
+    <textarea id='aga-user-message'></textarea>
+    <button type='button' id='aga-fetch-button'>Fetch Data</button>
+    <textarea readonly id='aga-response-container'>Type an NPC description and
       submit to generate an NPC!</textarea>
   {{else}}
     <h1>No API key was found</h1>

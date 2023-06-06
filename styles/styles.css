@@ -1,8 +1,12 @@
-.assistant {
+.aga-assistant-player-bar {
   margin-left: 12px;
 }
 
-#assistant-dm-button {
+#aga-robot-icon {
+  margin-left: 4px;
+}
+
+#aga-assistant-button {
   background: none;
   color: inherit;
   border: none;
@@ -14,18 +18,73 @@
   margin: auto;
 }
 
-#assistant-dm-button:hover {
+#aga-assistant-button:hover {
   box-shadow: none;
   border: none;
 }
 
-#response-container {
+#aga-response-container {
   min-height: 400px;
 }
 
-.settings-form {
+.aga-settings-form {
+  max-height: 660px;
+  margin: 12px 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 300px;
+  align-items: flex-start;
+}
+
+.aga-settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.aga-input-container {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+#aga-eye-icon {
+  font-size: 18px;
+  padding-bottom: 4px;
+}
+
+#agaApiKey {
+  margin-top: 4px;
+  min-width: 280px;
+}
+
+.aga-instruction-img {
+  max-height: 100px;
+  cursor: pointer;
+}
+
+.aga-instruction-img:hover {
+  box-shadow: 0 0 0 2px #000;
+}
+
+.aga-instruction-list {
+  margin: 16px 12px;
+}
+
+.aga-instruction-list > li {
+  margin: 8px 0;
+}
+
+.aga-toggle-api-visible {
+  cursor: pointer;
+}
+
+.aga-warning {
+  margin: 8px 16px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
 }

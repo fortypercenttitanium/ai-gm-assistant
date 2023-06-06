@@ -1,8 +1,9 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 export class OpenAiService {
-  #MODEL = 'gpt-3.5-turbo';
   #openai;
+
+  static MODEL = 'gpt-3.5-turbo';
 
   constructor(apiKey) {
     const config = new Configuration({
@@ -27,7 +28,7 @@ export class OpenAiService {
           content: userMessage,
         },
       ],
-      model: this.#MODEL,
+      model: this.MODEL,
     });
   }
 }

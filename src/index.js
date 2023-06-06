@@ -1,3 +1,3 @@
-import { DmAssistantConfig } from './config/DmAssistantConfig.js';
+import { AiGmAssistantConfig } from './config/AiGmAssistantConfig.js';
 
-DmAssistantConfig.registerHooks();
+AiGmAssistantConfig.registerHooks();

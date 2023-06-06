@@ -1,10 +1,187 @@
-<form class='settings-form'>
-  <label for='api-key'>{{apiKey}}</label>
-  <input type='text' id='api-key' placeholder='API Key' />
-  <button type='submit' id='save-api-key'>Save</button>
-  <a
-    href='https://www.buymeacoffee.com/benderthedev'
-    target='_blank'
-    rel='noreferrer'
-  >Buy me a beer</a>
+<form class='aga-settings-form'>
+  <div class='aga-settings-container'>
+    <h1>Set your API key</h1>
+    <div class='aga-input-container'>
+      <label for='agaApiKey'>API Key
+        <input
+          value='{{agaApiKey}}'
+          type='password'
+          id='agaApiKey'
+          name='agaApiKey'
+          placeholder='API Key'
+        />
+      </label>
+      <label
+        for='agaApiKey'
+        class='aga-toggle-api-visible'
+        role='button'
+        tabindex='0'
+      >
+        <i id='aga-eye-icon' class='fas fa-eye'></i>
+      </label>
+    </div>
+    <div class='aga-button-container'>
+      <button type='submit' id='aga-save-api-key'>Save API Key</button>
+    </div>
+  </div>
+  <div class='aga-instructions'>
+    <h1>How to create an OpenAI API Key</h1>
+    <ol class='aga-instruction-list'>
+      <li>
+        <div>
+          Go to
+          <a
+            href='https://platform.openai.com/signup'
+            target='_blank'
+            rel='noreferrer'
+          >https://platform.openai.com/signup</a>
+        </div>
+      </li>
+      <li>
+        <div>
+          Sign up, either with your email or through one of the listed providers
+        </div>
+        <div>
+          <img
+            class='aga-instruction-img'
+            id='{{images.step1.id}}'
+            src='{{images.step1.src}}'
+            alt='{{images.step1.text}}'
+          />
+        </div>
+      </li>
+      <li>
+        <div>
+          Verify your account
+        </div>
+      </li>
+      <li>
+        <div>
+          Go to
+          <a
+            href='https://platform.openai.com/apps'
+            target='_blank'
+            rel='noreferrer'
+          >https://platform.openai.com/apps</a>
+          if you aren't already there, and click "API".
+        </div>
+        <div>
+          <img
+            class='aga-instruction-img'
+            id='{{images.step2.id}}'
+            src='{{images.step2.src}}'
+            alt='{{images.step2.text}}'
+          />
+        </div>
+      </li>
+      <li>
+        <div>
+          Log in, if you aren't already
+        </div>
+      </li>
+      <li>
+        <div>
+          Click on your profile icon in the nav bar
+        </div>
+        <div>
+          <img
+            class='aga-instruction-img'
+            id='{{images.step3.id}}'
+            src='{{images.step3.src}}'
+            alt='{{images.step3.text}}'
+          />
+        </div>
+      </li>
+      <li>
+        <div>
+          Click on "View API Keys"
+        </div>
+        <div>
+          <img
+            class='aga-instruction-img'
+            id='{{images.step4.id}}'
+            src='{{images.step4.src}}'
+            alt='{{images.step4.text}}'
+          />
+        </div>
+      </li>
+      <li>
+        <div>
+          Click on "Create new secret key"
+        </div>
+        <div>
+          <img
+            class='aga-instruction-img'
+            id='{{images.step5.id}}'
+            src='{{images.step5.src}}'
+            alt='{{images.step5.text}}'
+          />
+        </div>
+      </li>
+      <li>
+        <div>
+          Give it any name, and click "Create secret key"
+        </div>
+        <div>
+          <img
+            class='aga-instruction-img'
+            id='{{images.step6.id}}'
+            src='{{images.step6.src}}'
+            alt='{{images.step6.text}}'
+          />
+        </div>
+      </li>
+      <li>
+        <div>
+          Copy the API key and paste it into the input field at the top of this
+          page.
+        </div>
+      </li>
+      <li>
+        <div>
+          There is a free trial for these API keys, but once your trial is up,
+          you will need to visit
+          <a
+            href='https://platform.openai.com/billing'
+            target='_blank'
+            rel='noreferrer'
+          >https://platform.openai.com/billing</a>
+          to add a payment method. Pricing can be viewed at
+          <a
+            href='https://openai.com/pricing'
+            target='_blank'
+            rel='noreferrer'
+          >https://openai.com/pricing</a>
+          under "Chat" - gpt-3.5-turbo.
+        </div>
+      </li>
+    </ol>
+
+    <aside class='aga-warning'>
+      IMPORTANT:
+      <ul>
+        <li>Do not share your API key with anyone. It is like a password, and
+          anyone with it can run up API costs on your account.
+        </li>
+        <li>This module does not store your API anywhere except in your game
+          client (which is local to your computer), and it is only used to make
+          requests to the OpenAI API.
+        </li>
+        <li>
+          If you are concerned about security, you can check the source code for
+          this module. (TODO: link github)
+        </li>
+      </ul>
+
+    </aside>
+    <p>If you enjoy this module, consider
+      <a
+        href='https://www.buymeacoffee.com/benderthedev'
+        target='_blank'
+        rel='noreferrer'
+      >
+        buying me a beer
+      </a>
+    </p>
+  </div>
 </form>

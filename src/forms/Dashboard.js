@@ -1,4 +1,4 @@
-import { DmAssistantConfig } from '../config/DmAssistantConfig.js';
+import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig.js';
 import { OpenAiService } from '../services/OpenAiService.js';
 
 export class Dashboard extends FormApplication {
@@ -7,41 +7,39 @@ export class Dashboard extends FormApplication {
   constructor() {
     super();
     this.#apiKey = game.settings.get(
-      DmAssistantConfig.ID,
-      DmAssistantConfig.SETTINGS.OPENAI_API_KEY,
+      AiGmAssistantConfig.ID,
+      AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
     );
     this.#aiService = new OpenAiService(this.#apiKey);
   }
+
+  static ID = 'aga-dashboard';
 
   static get defaultOptions() {
     const defaults = super.defaultOptions;
 
     const overrides = {
       height: 'auto',
-      id: 'dm-assistant-dashboard',
-      template: DmAssistantConfig.TEMPLATES.DASHBOARD,
-      title: 'DM Assistant Dashboard',
+      id: this.ID,
+      template: AiGmAssistantConfig.TEMPLATES.DASHBOARD,
+      title: 'AI GM Assistant Dashboard',
     };
 
     return foundry.utils.mergeObject(defaults, overrides);
   }
 
-  async _updateObject(event, formData) {
-    console.log('Update object called');
-    console.log(event);
-    console.log(formData);
-    return;
-  }
-
   getData() {
     return {
-      dmAssistant: 'dm-assistant',
+      agaApiKey: game.settings.get(
+        AiGmAssistantConfig.ID,
+        AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
+      ),
     };
   }
 
   activateListeners(html) {
     super.activateListeners(html);
-    $('#fetch-button').click(async () => {
+    $('#aga-submit').click(async () => {
       const userMessage = $('#user-message').val();
       if (!userMessage) return;
       console.log('USER MESSAGE | ', userMessage);

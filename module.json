@@ -1,6 +1,6 @@
 {
-  "id": "dm-assistant",
-  "title": "DM Assistant",
+  "id": "ai-gm-assistant",
+  "title": "AI GM Assistant",
   "description": "An AI solution to help DMs run their games by generating NPCs, encounters, loot, and more.",
   "authors": [
     {
