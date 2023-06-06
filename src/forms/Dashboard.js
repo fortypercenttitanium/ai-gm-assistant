@@ -20,6 +20,7 @@ export class Dashboard extends FormApplication {
 
     const overrides = {
       height: 'auto',
+      width: 'auto',
       id: this.ID,
       template: AiGmAssistantConfig.TEMPLATES.DASHBOARD,
       title: 'AI GM Assistant Dashboard',
@@ -28,25 +29,32 @@ export class Dashboard extends FormApplication {
     return foundry.utils.mergeObject(defaults, overrides);
   }
 
-  getData() {
+  async getData() {
     return {
       agaApiKey: game.settings.get(
         AiGmAssistantConfig.ID,
         AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
       ),
+      status: await this.#aiService.getCurrentStatus(),
     };
   }
 
   activateListeners(html) {
     super.activateListeners(html);
     $('#aga-submit').click(async () => {
-      const userMessage = $('#user-message').val();
+      const userMessage = $('#aga-user-message').val();
       if (!userMessage) return;
       console.log('USER MESSAGE | ', userMessage);
-      const response = await this.#aiService.createNPC(userMessage);
-      const npcJson = JSON.parse(response.data.choices[0].message.content);
-      console.log('AI RESPONSE | ', npcJson);
-      $('#response-container').val(JSON.stringify(npcJson, null, 2));
+
+      $('#aga-response-area').val('Loading...');
+      try {
+        const result = await this.#aiService.createNPC(userMessage);
+        console.log('AI RESPONSE | ', result);
+        $('#aga-response-area').val(JSON.stringify(result, null, 2));
+      } catch (error) {
+        console.error(error);
+        $('#aga-response-area').val('An error occured, please try again');
+      }
     });
   }
 }

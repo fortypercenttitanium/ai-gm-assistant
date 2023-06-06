@@ -1,0 +1,44 @@
+{
+  "npc": {
+    "name": "string",
+    "race": "string",
+    "appearance": "string",
+    "backstory:": "string",
+    "level": "number",
+    "class": "string",
+    "alignment": "lg | ng | cg | ln | n | cn | le | ne | ce",
+    "size": "tiny | small | medium | large | huge | gargantuan",
+    "stats": {
+      "cha": "number",
+      "con": "number",
+      "dex": "number",
+      "int": "number",
+      "str": "number",
+      "wis": "number"
+    },
+    "skills": {
+      "acrobatics": "number",
+      "arcana": "number",
+      "athletics": "number",
+      "crafting": "number",
+      "deception": "number",
+      "diplomacy": "number",
+      "intimidation": "number",
+      "lore": "number",
+      "medicine": "number",
+      "nature": "number",
+      "occultism": "number",
+      "performance": "number",
+      "religion": "number",
+      "society": "number",
+      "stealth": "number",
+      "survival": "number",
+      "thievery": "number"
+    },
+    "saves": { "fortitude": "number", "reflex": "number", "will": "number" },
+    "rarity": "common | uncommon | rare | unique",
+    "languages": ["string"],
+    "senses": ["string"],
+    "items": ["string"]
+  }
+}

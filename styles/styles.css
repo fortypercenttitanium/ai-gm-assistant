@@ -23,8 +23,17 @@
   border: none;
 }
 
-#aga-response-container {
-  min-height: 400px;
+.aga-dashboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.aga-response-container {
+  min-height: 600px;
+}
+
+.aga-response-area {
+  min-height: 460px;
 }
 
 .aga-settings-form {

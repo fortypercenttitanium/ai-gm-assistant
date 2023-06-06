@@ -1,13 +1,26 @@
-<form>
-  {{#if agaApiKey}}
-    <textarea id='aga-user-message'></textarea>
-    <button type='button' id='aga-fetch-button'>Fetch Data</button>
-    <textarea readonly id='aga-response-container'>Type an NPC description and
-      submit to generate an NPC!</textarea>
-  {{else}}
-    <h1>No API key was found</h1>
+<form class='aga-dashboard'>
+  {{#if (eq status 'ready')}}
+    <div class='aga-response-container'>
+      <textarea
+        placeholder='Type an NPC description and submit to generate an NPC!'
+        id='aga-user-message'
+      ></textarea>
+      <button type='button' id='aga-submit'>Generate</button>
+      <textarea
+        id='aga-response-area'
+        placeholder='Output will go here'
+        readonly
+      ></textarea>
+    </div>
+  {{else if (eq status 'api_key_invalid')}}
+    <h1>Invalid API Key</h1>
     <h3>
       Please visit the module settings to set your API key!
+    </h3>
+  {{else if (eq status 'error')}}
+    <h1>Error</h1>
+    <h3>
+      An error occurred, please try again later
     </h3>
   {{/if}}
 </form>
