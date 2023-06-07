@@ -26,6 +26,8 @@
 .aga-dashboard {
   display: flex;
   flex-direction: column;
+  max-width: 600px;
+  max-height: 800px;
 }
 
 .aga-response-container {
@@ -33,7 +35,12 @@
 }
 
 .aga-response-area {
-  min-height: 460px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
 .aga-settings-form {
@@ -102,4 +109,12 @@
 
 .aga-donate {
   margin: 24px 12px;
+}
+
+.aga-create-npc {
+  display: none;
+}
+
+.aga-object-indent {
+  margin-left: 6px;
 }

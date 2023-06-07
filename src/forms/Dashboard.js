@@ -14,6 +14,7 @@ export class Dashboard extends FormApplication {
   }
 
   static ID = 'aga-dashboard';
+  static FOLDER_NAME = 'Generated';
 
   static get defaultOptions() {
     const defaults = super.defaultOptions;
@@ -46,15 +47,62 @@ export class Dashboard extends FormApplication {
       if (!userMessage) return;
       console.log('USER MESSAGE | ', userMessage);
 
-      $('#aga-response-area').val('Loading...');
+      $('#aga-response-area').text('Loading...');
       try {
         const result = await this.#aiService.createNPC(userMessage);
         console.log('AI RESPONSE | ', result);
-        $('#aga-response-area').val(JSON.stringify(result, null, 2));
+        const responseHtml = Object.entries(result)
+          .map(([key, value]) => {
+            return `<p><strong>${key}</strong>: ${Dashboard.parseHtmlFromValue(
+              value,
+            )}</p>`;
+          })
+          .join('');
+
+        $('#aga-response-area').html(responseHtml);
+        $('.aga-create-npc')
+          .show()
+          .click(async () => {
+            const folder =
+              game.folders.find((f) => f.name === Dashboard.FOLDER_NAME) ??
+              (await Folder.create({
+                name: Dashboard.FOLDER_NAME,
+                type: 'Actor',
+                parent: null,
+              }));
+            const actor = await Actor.create(
+              {
+                name: result.name,
+                type: 'npc',
+                folder: folder.id,
+              },
+              {
+                render: true,
+                renderSheet: true,
+              },
+            );
+            // await actor.createEmbeddedDocuments('Item', result.items);
+          });
       } catch (error) {
         console.error(error);
         $('#aga-response-area').val('An error occured, please try again');
       }
     });
+  }
+
+  static parseHtmlFromValue(value) {
+    if (Array.isArray(value))
+      return value.map((v) => Dashboard.parseHtmlFromValue(v)).join(', ');
+    if (typeof value === 'object')
+      return Object.entries(value)
+        .map(
+          ([key, value]) =>
+            `<div class='aga-object-indent'><strong>${key}</strong>: ${Dashboard.parseHtmlFromValue(
+              value,
+            )}</div>`,
+        )
+        .join('');
+
+    return value;
   }
 }

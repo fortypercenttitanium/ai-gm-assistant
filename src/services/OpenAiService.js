@@ -67,9 +67,9 @@ export class OpenAiService {
       messages: [
         {
           role: 'assistant',
-          content: `You are an assistant GM for a Pathfinder 2e RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using this schema: ${JSON.stringify(
+          content: `You are an assistant GM for a Pathfinder 2e RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. The GM may provide some of these fields, but any that are not provided should be generated. Take special care to ensure the skill levels are appropriate for the NPC's level, for example, no character below 5 should be legendary in any skill, and no character below 15 should be legendary in more than one skill. Here is the schema: ${JSON.stringify(
             schemas.npc,
-          )}. The GM may provide some of these fields, but any that are not provided should be generated. The numbers for skills and saves should be between 0 and 4, where 0 is untrained, 1 is trained, 2 is expert, 3 is master, and 4 is legendary.`,
+          )}.`,
         },
         {
           role: 'user',

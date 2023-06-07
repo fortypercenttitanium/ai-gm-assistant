@@ -6,11 +6,8 @@
         id='aga-user-message'
       ></textarea>
       <button type='button' id='aga-submit'>Generate</button>
-      <textarea
-        id='aga-response-area'
-        placeholder='Output will go here'
-        readonly
-      ></textarea>
+      <div id='aga-response-area'>Output will go here</div>
+      <button type='button' class='aga-create-npc'>Create NPC as Actor</button>
     </div>
   {{else if (eq status 'api_key_invalid')}}
     <h1>Invalid API Key</h1>
