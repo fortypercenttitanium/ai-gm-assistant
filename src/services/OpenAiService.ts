@@ -3,8 +3,10 @@ import schemas from './schemas.json';
 
 export class OpenAiService {
   #openai;
+  public model: string;
+  public apiKeyIsValid: boolean;
 
-  constructor(apiKey) {
+  constructor(apiKey: string) {
     const config = new Configuration({
       apiKey,
     });
@@ -27,7 +29,7 @@ export class OpenAiService {
     try {
       await this.#openai.retrieveModel(this.model);
       return OpenAiService.STATUS.READY;
-    } catch (error) {
+    } catch (error: any) {
       if (error.message?.toLowerCase().includes('status code 401'))
         return OpenAiService.STATUS.API_KEY_INVALID;
 
@@ -35,20 +37,20 @@ export class OpenAiService {
     }
   }
 
-  static tryParseJSONResponse(json) {
+  static tryParseJSONResponse(json: string) {
     try {
       const result = JSON.parse(json);
       return result;
     } catch (error) {
       // try to get the string between ```json and ```
-      const regex1 = /```(json)?([^`]*)```/gm;
-      const matches1 = regex1.exec(json);
-      if (matches1?.length > 1) return JSON.parse(matches1[2]);
+      const regexJson = /```(json)?([^`]*)```/gm;
+      const matchesJson = regexJson.exec(json);
+      if (matchesJson?.[2]) return JSON.parse(matchesJson[2]);
 
       // try to get the string between ``` and ```
-      const regex2 = /```([^`]*)```/gm;
-      const matches2 = regex2.exec(json);
-      if (matches2?.length > 1) return JSON.parse(matches2[1]);
+      const regexNoJson = /```([^`]*)```/gm;
+      const matchesNoJson = regexNoJson.exec(json);
+      if (matchesNoJson?.[1]) return JSON.parse(matchesNoJson[1]);
 
       // look for the first { and last }
       const first = json.indexOf('{');
@@ -62,7 +64,7 @@ export class OpenAiService {
     }
   }
 
-  async createNPC(userMessage) {
+  async createNPC(userMessage: string) {
     const result = await this.#openai.createChatCompletion({
       messages: [
         {
@@ -79,8 +81,9 @@ export class OpenAiService {
       model: this.model,
     });
 
-    return OpenAiService.tryParseJSONResponse(
-      result.data.choices[0].message.content,
-    );
+    const messageResult = result.data.choices[0].message?.content;
+    if (!messageResult)
+      throw new Error('No message result returned from API call');
+    return OpenAiService.tryParseJSONResponse(messageResult);
   }
 }

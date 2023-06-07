@@ -14,7 +14,7 @@ export class AiGmAssistantConfig {
     SETTINGS_MENU: 'ai-gm-settings-menu',
   };
 
-  static log(force, ...args) {
+  static log(force: any, ...args: any[]) {
     const shouldLog =
       force ||
       game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
@@ -50,13 +50,13 @@ export class AiGmAssistantConfig {
   static registerHooks() {
     Hooks.once('init', () => this.initialize());
 
-    Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
+    Hooks.once('devModeReady', ({ registerPackageDebugFlag }: any) => {
       registerPackageDebugFlag(this.ID);
     });
 
     Hooks.on('renderPlayerList', () => {
       // get gm user id
-      const gm = game.users.find((u) => u.isGM && u.active);
+      const gm = game.users.find((u: any) => u.isGM && u.active);
       if (!gm) return;
 
       $(`li[data-user-id=${gm.id}]`).after(

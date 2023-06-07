@@ -1,6 +1,14 @@
 import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig';
 
+export type AgaImage = {
+  id: string;
+  src: string;
+  text: string;
+};
+
 export class AiGmAssistantSettings extends FormApplication {
+  images: { [key: string]: AgaImage };
+
   constructor() {
     super();
 
@@ -54,7 +62,7 @@ export class AiGmAssistantSettings extends FormApplication {
     return foundry.utils.mergeObject(defaults, overrides);
   }
 
-  async _updateObject(event, formData) {
+  async _updateObject(_: any, formData: any) {
     const { agaApiKey } = expandObject(formData);
 
     const confirmed = await Dialog.confirm({
@@ -85,7 +93,7 @@ export class AiGmAssistantSettings extends FormApplication {
     };
   }
 
-  activateListeners(html) {
+  activateListeners(html: any) {
     super.activateListeners(html);
 
     $('.aga-toggle-api-visible').click(() => {

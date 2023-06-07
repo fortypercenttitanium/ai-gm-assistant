@@ -3,7 +3,7 @@ export default {
   build: {
     rollupOptions: {
       input: {
-        main: './src/index.js',
+        main: './src/index.ts',
       },
       output: {
         entryFileNames: 'index.js',

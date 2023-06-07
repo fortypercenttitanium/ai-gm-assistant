@@ -40,10 +40,10 @@ export class Dashboard extends FormApplication {
     };
   }
 
-  activateListeners(html) {
+  activateListeners(html: any) {
     super.activateListeners(html);
-    $('#aga-submit').click(async () => {
-      const userMessage = $('#aga-user-message').val();
+    $('#aga-submit').on('click', async () => {
+      const userMessage = $('#aga-user-message').val() as string;
       if (!userMessage) return;
       console.log('USER MESSAGE | ', userMessage);
 
@@ -62,15 +62,15 @@ export class Dashboard extends FormApplication {
         $('#aga-response-area').html(responseHtml);
         $('.aga-create-npc')
           .show()
-          .click(async () => {
+          .on('click', async () => {
             const folder =
-              game.folders.find((f) => f.name === Dashboard.FOLDER_NAME) ??
+              game.folders.find((f: any) => f.name === Dashboard.FOLDER_NAME) ??
               (await Folder.create({
                 name: Dashboard.FOLDER_NAME,
                 type: 'Actor',
                 parent: null,
               }));
-            const actor = await Actor.create(
+            await Actor.create(
               {
                 name: result.name,
                 type: 'npc',
@@ -90,7 +90,7 @@ export class Dashboard extends FormApplication {
     });
   }
 
-  static parseHtmlFromValue(value) {
+  static parseHtmlFromValue(value: any): string {
     if (Array.isArray(value))
       return value.map((v) => Dashboard.parseHtmlFromValue(v)).join(', ');
     if (typeof value === 'object')
