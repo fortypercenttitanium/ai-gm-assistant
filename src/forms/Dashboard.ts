@@ -1,5 +1,6 @@
 import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig.js';
 import { OpenAiService } from '../services/OpenAiService.js';
+import { Pf2eHelper } from '../services/Pf2eHelper.js';
 
 export class Dashboard extends FormApplication {
   #aiService;
@@ -63,24 +64,9 @@ export class Dashboard extends FormApplication {
         $('.aga-create-npc')
           .show()
           .on('click', async () => {
-            const folder =
-              game.folders.find((f: any) => f.name === Dashboard.FOLDER_NAME) ??
-              (await Folder.create({
-                name: Dashboard.FOLDER_NAME,
-                type: 'Actor',
-                parent: null,
-              }));
-            await Actor.create(
-              {
-                name: result.name,
-                type: 'npc',
-                folder: folder.id,
-              },
-              {
-                render: true,
-                renderSheet: true,
-              },
-            );
+            await Pf2eHelper.createNpc({
+              ...result,
+            });
             // await actor.createEmbeddedDocuments('Item', result.items);
           });
       } catch (error) {
