@@ -7,6 +7,7 @@ declare global {
   var ImagePopout: any;
   var Dialog: any;
   var FormApplication: any;
+  var Item: any;
   var expandObject: Function;
 }
 

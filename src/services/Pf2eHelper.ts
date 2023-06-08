@@ -95,7 +95,7 @@ export class Pf2eHelper extends FoundryHelper {
       true,
     );
 
-    return Pf2eHelper.createActor(
+    const actor = await Pf2eHelper.createActor(
       {
         name,
         type: 'npc',
@@ -210,9 +210,54 @@ export class Pf2eHelper extends FoundryHelper {
         },
       },
     );
+
+    const itemsForActor = await Promise.all(
+      items?.map(
+        async (item) =>
+          Pf2eHelper.SearchForItem(item) ??
+          (await Item.create({ name: item, type: 'equipment' })),
+      ) ?? [],
+    );
+
+    actor.createEmbeddedDocuments('Item', itemsForActor);
+
+    return actor;
   }
 
   private static CalcStatMod(stat?: number) {
     return ((stat ?? 10) - 10) / 2;
+  }
+
+  private static SearchForItem(term: string): any {
+    term = term.toLowerCase();
+    const equipment = game.packs.get('pf2e.equipment-srd').index.contents;
+
+    let searchResult =
+      equipment.find((x: any) => x.name.toLowerCase() === term) ||
+      equipment.find((x: any) => x.name.toLowerCase().startsWith(term)) ||
+      equipment.find((x: any) => x.name.toLowerCase().includes(term));
+
+    if (searchResult) return searchResult;
+
+    const kitRegex = /(\w+)'s kit/;
+    const runeRegex = /\+(\d)/;
+    const kitMatch = term.match(kitRegex);
+    const runeMatch = term.match(runeRegex);
+    if (kitMatch) {
+      const className = kitMatch[1].toLowerCase();
+      const modifiedInput = term.replace(kitRegex, `Class kit (${className})`);
+      return Pf2eHelper.SearchForItem(modifiedInput);
+    }
+
+    if (runeMatch) {
+      const bonus = Number.parseInt(runeMatch[1]);
+      const item: any = Pf2eHelper.SearchForItem(term.replace(runeRegex, ''));
+
+      if (item) {
+        item.system.potencyRune.value = bonus;
+      }
+
+      return item;
+    }
   }
 }

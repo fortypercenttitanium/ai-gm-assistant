@@ -67,7 +67,6 @@ export class Dashboard extends FormApplication {
             await Pf2eHelper.createNpc({
               ...result,
             });
-            // await actor.createEmbeddedDocuments('Item', result.items);
           });
       } catch (error) {
         console.error(error);
