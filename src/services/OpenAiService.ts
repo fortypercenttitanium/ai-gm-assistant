@@ -68,19 +68,14 @@ export class OpenAiService {
     const result = await this.#openai.createChatCompletion({
       messages: [
         {
-          role: 'assistant',
-          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
+          role: 'system',
+          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. MOST IMPORTANTLY - Make sure the NPC's skill tiers are appropriate for their level! Legendary skills are rare, and should only exist on characters level 10 and above. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
             schemas.npc,
           )}.`,
         },
         {
           role: 'user',
           content: userMessage,
-        },
-        {
-          role: 'user',
-          content:
-            "MOST IMPORTANTLY - Make sure the NPC's skill tiers are appropriate for their level! Legendary skills are rare, and should only exist on characters level 10 and above.",
         },
       ],
       model: this.model,
