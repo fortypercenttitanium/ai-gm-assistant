@@ -2,11 +2,11 @@
   {{#if (eq status 'ready')}}
     <div class='aga-response-container'>
       <textarea
-        placeholder='Type an NPC description and submit to generate an NPC!'
+        placeholder='Type an NPC description and generate!'
         id='aga-user-message'
       ></textarea>
       <button type='button' id='aga-submit'>Generate</button>
-      <div id='aga-response-area'>Output will go here</div>
+      <div class='aga-response-area'>Output will go here</div>
       <button type='button' class='aga-create-npc'>Create NPC as Actor</button>
     </div>
   {{else if (eq status 'api_key_invalid')}}

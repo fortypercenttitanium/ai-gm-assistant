@@ -46,21 +46,28 @@ export class Dashboard extends FormApplication {
     $('#aga-submit').on('click', async () => {
       const userMessage = $('#aga-user-message').val() as string;
       if (!userMessage) return;
-      console.log('USER MESSAGE | ', userMessage);
 
-      $('#aga-response-area').text('Loading...');
+      $('#aga-submit').prop('disabled', true);
+      $('.aga-response-area').html(
+        '<div class="loading-container"><div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><h4>Generating NPC...</h4></div>',
+      );
       try {
         const result = await this.#aiService.createNPC(userMessage);
-        console.log('AI RESPONSE | ', result);
+
         const responseHtml = Object.entries(result)
           .map(([key, value]) => {
-            return `<p><strong>${key}</strong>: ${Dashboard.parseHtmlFromValue(
-              value,
-            )}</p>`;
+            return `<p class="aga-response-${key}"><strong>${Dashboard.capitalizeString(
+              key,
+            )}</strong>: ${Dashboard.parseHtmlFromValue(value)}</p>`;
           })
           .join('');
 
-        $('#aga-response-area').html(responseHtml);
+        $('.aga-response-area').html(responseHtml);
+
+        $('.aga-response-items > strong').append(
+          '<i class="fa-solid fa-circle-info" title="If you create this NPC as an actor, items with potency runes will be given to the actor but the potency run itself will need to be added manually."></i>',
+        );
+
         $('.aga-create-npc')
           .show()
           .on('click', async () => {
@@ -70,7 +77,11 @@ export class Dashboard extends FormApplication {
           });
       } catch (error) {
         console.error(error);
-        $('#aga-response-area').val('An error occured, please try again');
+        $('.aga-response-area').html(
+          '<h3>An error occured, please try again</h3>',
+        );
+      } finally {
+        $('#aga-submit').prop('disabled', false);
       }
     });
   }
@@ -82,12 +93,16 @@ export class Dashboard extends FormApplication {
       return Object.entries(value)
         .map(
           ([key, value]) =>
-            `<div class='aga-object-indent'><strong>${key}</strong>: ${Dashboard.parseHtmlFromValue(
-              value,
-            )}</div>`,
+            `<div class='aga-object-indent'><strong>${Dashboard.capitalizeString(
+              key,
+            )}</strong>: ${Dashboard.parseHtmlFromValue(value)}</div>`,
         )
         .join('');
 
     return value;
+  }
+
+  private static capitalizeString(str: string): string {
+    return str[0].toUpperCase() + str.slice(1);
   }
 }

@@ -1,65 +1,14 @@
+import {
+  SkillLevel,
+  Pf2eNpcOutputParams,
+  Pf2eSkillsParams,
+  Pf2eSkillInput,
+  Pf2eAbilitiesParams,
+  Pf2eAbilitiesInput,
+  Pf2eSavesInput,
+  Pf2eSavesParams,
+} from '../types/Pf2eTypes';
 import { FoundryHelper } from './FoundryHelper';
-
-export type Pf2eNpcParams = {
-  name: string;
-  race: string;
-  appearance?: string;
-  backstory?: string;
-  class?: string;
-  level?: number;
-  alignment?: 'lg' | 'ng' | 'cg' | 'ln' | 'n' | 'cn' | 'le' | 'ne' | 'ce';
-  rarity?: string;
-  size?: 'tiny' | 'sm' | 'med' | 'lg' | 'huge' | 'grg';
-  traits?: string[];
-  perception?: number;
-  senses?: string[];
-  languages?: string[];
-  items?: any[];
-  stats?: Pf2eStatsParams;
-  skills?: Pf2eSkillsParams;
-  saves?: Pf2eSavesParams;
-};
-
-export type Pf2eStatsParams = {
-  str: number;
-  dex: number;
-  con: number;
-  int: number;
-  wis: number;
-  cha: number;
-};
-
-export type SkillLevel =
-  | 'untrained'
-  | 'trained'
-  | 'expert'
-  | 'master'
-  | 'legendary';
-
-export type Pf2eSkillsParams = {
-  acrobatics: SkillLevel;
-  arcana: SkillLevel;
-  athletics: SkillLevel;
-  crafting: SkillLevel;
-  deception: SkillLevel;
-  diplomacy: SkillLevel;
-  intimidation: SkillLevel;
-  medicine: SkillLevel;
-  nature: SkillLevel;
-  occultism: SkillLevel;
-  performance: SkillLevel;
-  religion: SkillLevel;
-  society: SkillLevel;
-  stealth: SkillLevel;
-  survival: SkillLevel;
-  thievery: SkillLevel;
-};
-
-export type Pf2eSavesParams = {
-  fortitude: number;
-  reflex: number;
-  will: number;
-};
 
 const SKILL_LEVEL_MAP: Record<SkillLevel, number> = {
   untrained: 0,
@@ -70,30 +19,19 @@ const SKILL_LEVEL_MAP: Record<SkillLevel, number> = {
 };
 
 export class Pf2eHelper extends FoundryHelper {
-  static async createNpc(params: Pf2eNpcParams) {
-    const {
-      name,
-      race,
-      appearance,
-      backstory,
-      class: className,
-      level,
-      alignment,
-      size,
-      rarity,
-      traits,
-      senses,
-      languages,
-      items,
-      stats,
-      skills,
-      saves,
-    } = params;
+  static async createNpc(params: Pf2eNpcOutputParams) {
+    const { name } = params;
 
     const folder = await FoundryHelper.getFolder(
       { name: 'Generated', type: 'Actor' },
       true,
     );
+
+    const traits = Pf2eHelper.mapTraitsInput(params);
+    const details = Pf2eHelper.mapDetailsInput(params);
+    const saves = Pf2eHelper.mapSavesInput(params.saves);
+    const skills = Pf2eHelper.mapSkillsInput(params.skills);
+    const abilities = Pf2eHelper.mapAbilitiesInput(params.abilities);
 
     const actor = await Pf2eHelper.createActor(
       {
@@ -103,122 +41,17 @@ export class Pf2eHelper extends FoundryHelper {
       },
       {
         system: {
-          traits: {
-            value: [race, ...(traits ?? [])],
-            languages: {
-              value: languages?.map((l) => l.toLowerCase()) ?? [],
-            },
-            rarity,
-            size: {
-              value: size,
-            },
-            senses: senses?.join(', '),
-          },
-          details: {
-            alignment: {
-              value: alignment?.toUpperCase(),
-            },
-            publicNotes: `<p>${appearance}</p><hr /><p>${backstory}</p>`,
-            blurb: `Level ${level ?? 1} ${race ?? 'Unknown'} ${
-              className ?? 'Commoner'
-            }`,
-            level: {
-              value: level,
-            },
-          },
-          saves: {
-            fortitude: {
-              value: saves?.fortitude ?? 0,
-            },
-            reflex: {
-              value: saves?.reflex ?? 0,
-            },
-            will: {
-              value: saves?.will ?? 0,
-            },
-          },
-          skills: {
-            acrobatics: {
-              value: SKILL_LEVEL_MAP[skills?.acrobatics ?? 'untrained'],
-            },
-            arcana: {
-              value: SKILL_LEVEL_MAP[skills?.arcana ?? 'untrained'],
-            },
-            athletics: {
-              value: SKILL_LEVEL_MAP[skills?.athletics ?? 'untrained'],
-            },
-            crafting: {
-              value: SKILL_LEVEL_MAP[skills?.crafting ?? 'untrained'],
-            },
-            deception: {
-              value: SKILL_LEVEL_MAP[skills?.deception ?? 'untrained'],
-            },
-            diplomacy: {
-              value: SKILL_LEVEL_MAP[skills?.diplomacy ?? 'untrained'],
-            },
-            intimidation: {
-              value: SKILL_LEVEL_MAP[skills?.intimidation ?? 'untrained'],
-            },
-            medicine: {
-              value: SKILL_LEVEL_MAP[skills?.medicine ?? 'untrained'],
-            },
-            nature: {
-              value: SKILL_LEVEL_MAP[skills?.nature ?? 'untrained'],
-            },
-            occultism: {
-              value: SKILL_LEVEL_MAP[skills?.occultism ?? 'untrained'],
-            },
-            performance: {
-              value: SKILL_LEVEL_MAP[skills?.performance ?? 'untrained'],
-            },
-            religion: {
-              value: SKILL_LEVEL_MAP[skills?.religion ?? 'untrained'],
-            },
-            society: {
-              value: SKILL_LEVEL_MAP[skills?.society ?? 'untrained'],
-            },
-            stealth: {
-              value: SKILL_LEVEL_MAP[skills?.stealth ?? 'untrained'],
-            },
-            survival: {
-              value: SKILL_LEVEL_MAP[skills?.survival ?? 'untrained'],
-            },
-            thievery: {
-              value: SKILL_LEVEL_MAP[skills?.thievery ?? 'untrained'],
-            },
-          },
-          abilities: {
-            cha: {
-              mod: Pf2eHelper.CalcStatMod(stats?.cha),
-            },
-            con: {
-              mod: Pf2eHelper.CalcStatMod(stats?.con),
-            },
-            dex: {
-              mod: Pf2eHelper.CalcStatMod(stats?.dex),
-            },
-            int: {
-              mod: Pf2eHelper.CalcStatMod(stats?.int),
-            },
-            str: {
-              mod: Pf2eHelper.CalcStatMod(stats?.str),
-            },
-            wis: {
-              mod: Pf2eHelper.CalcStatMod(stats?.wis),
-            },
-          },
+          traits,
+          details,
+          saves,
+          skills,
+          abilities,
         },
       },
     );
 
-    const itemsForActor = await Promise.all(
-      items?.map(
-        async (item) =>
-          Pf2eHelper.SearchForItem(item) ??
-          (await Item.create({ name: item, type: 'equipment' })),
-      ) ?? [],
-    );
-
+    // type pf2e items, then loop through and create them, adding characteristics as needed such as potency runes
+    const itemsForActor = await Pf2eHelper.createNpcItems(params.items);
     actor.createEmbeddedDocuments('Item', itemsForActor);
 
     return actor;
@@ -228,17 +61,111 @@ export class Pf2eHelper extends FoundryHelper {
     return ((stat ?? 10) - 10) / 2;
   }
 
-  private static SearchForItem(term: string): any {
+  private static mapSkillsInput(skills?: Pf2eSkillsParams): Pf2eSkillInput {
+    if (!skills) return {};
+    return Object.entries(skills).reduce<Pf2eSkillInput>(
+      (acc, [key, value]) => {
+        acc[key as keyof Pf2eSkillInput] = { value: SKILL_LEVEL_MAP[value] };
+        return acc;
+      },
+      {} as Pf2eSkillInput,
+    );
+  }
+
+  private static mapAbilitiesInput(
+    attributes?: Pf2eAbilitiesParams,
+  ): Pf2eAbilitiesInput {
+    if (!attributes) return {};
+    return Object.entries(attributes).reduce<Pf2eAbilitiesInput>(
+      (acc, [key, value]) => {
+        acc[key as keyof Pf2eAbilitiesInput] = {
+          mod: Pf2eHelper.CalcStatMod(value),
+        };
+        return acc;
+      },
+      {},
+    );
+  }
+
+  private static mapSavesInput(saves?: Pf2eSavesParams): Pf2eSavesInput {
+    if (!saves) return {};
+    return Object.entries(saves).reduce((acc, [key, value]) => {
+      acc[key as keyof Pf2eSavesInput] = { value };
+      return acc;
+    }, {} as Pf2eSavesInput);
+  }
+
+  private static mapDetailsInput(details: Partial<Pf2eNpcOutputParams>): any {
+    const alignment = { value: details.alignment?.toUpperCase() ?? 'n' };
+    const publicNotes = `<p>${details.appearance}</p><hr /><p>${details.backstory}</p>`;
+    const blurb = `Level ${details.level ?? 1} ${details.race ?? 'Unknown'} ${
+      details.class ?? 'Commoner'
+    }`;
+    const level = {
+      value: details.level ?? 1,
+    };
+    const source = {
+      value: 'AI-Generated',
+      author: 'AI GM Assistant',
+    };
+
+    return {
+      alignment,
+      publicNotes,
+      blurb,
+      level,
+      source,
+    };
+  }
+
+  private static mapTraitsInput(details: Partial<Pf2eNpcOutputParams>): any {
+    const traits = [details.race, ...(details.traits ?? [])];
+    const languages = {
+      value: details.languages?.map((l) => l.toLowerCase()) ?? [],
+    };
+    const { rarity } = details;
+    const size = {
+      value: details.size,
+    };
+    const senses = { value: details.senses?.join(', ') };
+
+    return {
+      value: traits,
+      languages,
+      rarity,
+      size,
+      senses,
+    };
+  }
+
+  private static async createNpcItems(items?: string[]): Promise<any[]> {
+    if (!items) return [];
+
+    return await Promise.all(
+      items?.map(
+        async (item) =>
+          Pf2eHelper.searchCompendium(item, 'pf2e.equipment-srd') ??
+          (await Item.create({ name: item, type: 'equipment' })),
+      ) ?? [],
+    );
+  }
+
+  private static searchCompendium(term: string, packName: string): any {
     term = term.toLowerCase();
-    const equipment = game.packs.get('pf2e.equipment-srd').index.contents;
+    const equipment = game.packs.get(packName).index.contents;
 
     let searchResult =
       equipment.find((x: any) => x.name.toLowerCase() === term) ||
       equipment.find((x: any) => x.name.toLowerCase().startsWith(term)) ||
-      equipment.find((x: any) => x.name.toLowerCase().includes(term));
+      equipment
+        .filter((x: any) => x.name.toLowerCase().includes(term))
+        .reduce((acc: any, curr: any) => {
+          return acc?.name.length < curr.name.length ? acc : curr;
+        }, undefined);
 
     if (searchResult) return searchResult;
 
+    // refactor to an array of search functions
     const kitRegex = /(\w+)'s kit/;
     const runeRegex = /\+(\d)/;
     const kitMatch = term.match(kitRegex);
@@ -246,18 +173,24 @@ export class Pf2eHelper extends FoundryHelper {
     if (kitMatch) {
       const className = kitMatch[1].toLowerCase();
       const modifiedInput = term.replace(kitRegex, `Class kit (${className})`);
-      return Pf2eHelper.SearchForItem(modifiedInput);
+      return Pf2eHelper.searchCompendium(modifiedInput, packName);
     }
 
     if (runeMatch) {
-      const bonus = Number.parseInt(runeMatch[1]);
-      const item: any = Pf2eHelper.SearchForItem(term.replace(runeRegex, ''));
+      const item: any = Pf2eHelper.searchCompendium(
+        term.replace(runeRegex, '').trim(),
+        packName,
+      );
 
-      if (item) {
-        item.system.potencyRune.value = bonus;
-      }
+      // doesn't work
+      // const bonus = Number.parseInt(runeMatch[1]);
+      // if (item) {
+      //   item.system.potencyRune.value = bonus;
+      // }
 
       return item;
     }
+
+    return searchResult;
   }
 }

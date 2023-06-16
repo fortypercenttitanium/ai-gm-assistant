@@ -45,12 +45,12 @@ export class OpenAiService {
       // try to get the string between ```json and ```
       const regexJson = /```(json)?([^`]*)```/gm;
       const matchesJson = regexJson.exec(json);
-      if (matchesJson?.[2]) return JSON.parse(matchesJson[2]);
+      if (matchesJson?.[2]) return JSON.parse(matchesJson[2].trim());
 
       // try to get the string between ``` and ```
       const regexNoJson = /```([^`]*)```/gm;
       const matchesNoJson = regexNoJson.exec(json);
-      if (matchesNoJson?.[1]) return JSON.parse(matchesNoJson[1]);
+      if (matchesNoJson?.[1]) return JSON.parse(matchesNoJson[1].trim());
 
       // look for the first { and last }
       const first = json.indexOf('{');
@@ -69,7 +69,7 @@ export class OpenAiService {
       messages: [
         {
           role: 'assistant',
-          content: `You are an assistant GM for a Pathfinder 2e RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. The GM may provide some of these fields, but any that are not provided should be generated. Take special care to ensure the skill levels are appropriate for the NPC's level, for example, no character below 5 should be legendary in any skill, and no character below 15 should be legendary in more than one skill. Here is the schema: ${JSON.stringify(
+          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. Here is the schema: ${JSON.stringify(
             schemas.npc,
           )}.`,
         },
@@ -77,13 +77,20 @@ export class OpenAiService {
           role: 'user',
           content: userMessage,
         },
+        {
+          role: 'user',
+          content:
+            "Make sure the NPC's skill tiers are appropriate for their level. Legendary skills are rare, and should only exist on characters level 10 and above.",
+        },
       ],
       model: this.model,
     });
 
     const messageResult = result.data.choices[0].message?.content;
+
     if (!messageResult)
       throw new Error('No message result returned from API call');
+
     return OpenAiService.tryParseJSONResponse(messageResult);
   }
 }
