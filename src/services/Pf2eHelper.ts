@@ -32,6 +32,7 @@ export class Pf2eHelper extends FoundryHelper {
     const saves = Pf2eHelper.mapSavesInput(params.saves);
     const skills = Pf2eHelper.mapSkillsInput(params.skills);
     const abilities = Pf2eHelper.mapAbilitiesInput(params.abilities);
+    const attributes = Pf2eHelper.mapAttributesInput(params);
 
     const actor = await Pf2eHelper.createActor(
       {
@@ -46,6 +47,7 @@ export class Pf2eHelper extends FoundryHelper {
           saves,
           skills,
           abilities,
+          attributes,
         },
       },
     );
@@ -73,10 +75,10 @@ export class Pf2eHelper extends FoundryHelper {
   }
 
   private static mapAbilitiesInput(
-    attributes?: Pf2eAbilitiesParams,
+    abilities?: Pf2eAbilitiesParams,
   ): Pf2eAbilitiesInput {
-    if (!attributes) return {};
-    return Object.entries(attributes).reduce<Pf2eAbilitiesInput>(
+    if (!abilities) return {};
+    return Object.entries(abilities).reduce<Pf2eAbilitiesInput>(
       (acc, [key, value]) => {
         acc[key as keyof Pf2eAbilitiesInput] = {
           mod: Pf2eHelper.CalcStatMod(value),
@@ -85,6 +87,24 @@ export class Pf2eHelper extends FoundryHelper {
       },
       {},
     );
+  }
+
+  private static mapAttributesInput(params: Partial<Pf2eNpcOutputParams>) {
+    if (!params.hp && !params.ac) return {};
+
+    const attributes: any = {
+      ac: {
+        base: params.ac ?? 10,
+        value: params.ac ?? 10,
+      },
+      hp: {
+        value: params.hp ?? 10,
+        max: params.hp ?? 10,
+        base: params.hp ?? 10,
+      },
+    };
+
+    return attributes;
   }
 
   private static mapSavesInput(saves?: Pf2eSavesParams): Pf2eSavesInput {

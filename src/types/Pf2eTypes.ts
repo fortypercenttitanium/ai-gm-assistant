@@ -66,6 +66,8 @@ export type Pf2eNpcOutputParams = {
   backstory?: string;
   class?: string;
   level?: number;
+  hp?: number;
+  ac?: number;
   alignment?: Pf2eAlignment;
   rarity?: string;
   size?: Pf2eSize;

@@ -8,6 +8,8 @@
     "class": "string",
     "alignment": "lg | ng | cg | ln | n | cn | le | ne | ce",
     "size": "tiny | sm | med | lg | huge | grg",
+    "hp": "number",
+    "ac": "number",
     "abilities": {
       "cha": "number",
       "con": "number",

@@ -43,11 +43,15 @@
   border-radius: 4px;
   padding: 8px;
   box-shadow: 3px 3px 3px #4a4b46;
-  margin: 8px;
+  margin: 8px 8px 16px;
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 380px;
+}
+
+.aga-response-area > div {
+  margin: 4px 0;
 }
 
 #aga-submit {

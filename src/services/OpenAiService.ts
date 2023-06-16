@@ -69,7 +69,7 @@ export class OpenAiService {
       messages: [
         {
           role: 'assistant',
-          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. Here is the schema: ${JSON.stringify(
+          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
             schemas.npc,
           )}.`,
         },
@@ -80,7 +80,7 @@ export class OpenAiService {
         {
           role: 'user',
           content:
-            "Make sure the NPC's skill tiers are appropriate for their level. Legendary skills are rare, and should only exist on characters level 10 and above.",
+            "MOST IMPORTANTLY - Make sure the NPC's skill tiers are appropriate for their level! Legendary skills are rare, and should only exist on characters level 10 and above.",
         },
       ],
       model: this.model,
@@ -92,5 +92,15 @@ export class OpenAiService {
       throw new Error('No message result returned from API call');
 
     return OpenAiService.tryParseJSONResponse(messageResult);
+  }
+
+  async createActorIcon(prompt: string): Promise<any> {
+    const response = await this.#openai.createImage({
+      prompt,
+      n: 4,
+      size: '512x512',
+    });
+
+    console.log(response);
   }
 }

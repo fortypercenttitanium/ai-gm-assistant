@@ -1,6 +1,7 @@
 import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig.js';
 import { OpenAiService } from '../services/OpenAiService.js';
 import { Pf2eHelper } from '../services/Pf2eHelper.js';
+import { HtmlHelper } from '../services/HtmlHelper.js';
 
 export class Dashboard extends FormApplication {
   #aiService;
@@ -12,6 +13,7 @@ export class Dashboard extends FormApplication {
       AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
     );
     this.#aiService = new OpenAiService(this.#apiKey);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   static ID = 'aga-dashboard';
@@ -43,66 +45,60 @@ export class Dashboard extends FormApplication {
 
   activateListeners(html: any) {
     super.activateListeners(html);
+
     $('#aga-submit').on('click', async () => {
-      const userMessage = $('#aga-user-message').val() as string;
-      if (!userMessage) return;
-
-      $('#aga-submit').prop('disabled', true);
-      $('.aga-response-area').html(
-        '<div class="loading-container"><div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><h4>Generating NPC...</h4></div>',
-      );
-      try {
-        const result = await this.#aiService.createNPC(userMessage);
-
-        const responseHtml = Object.entries(result)
-          .map(([key, value]) => {
-            return `<p class="aga-response-${key}"><strong>${Dashboard.capitalizeString(
-              key,
-            )}</strong>: ${Dashboard.parseHtmlFromValue(value)}</p>`;
-          })
-          .join('');
-
-        $('.aga-response-area').html(responseHtml);
-
-        $('.aga-response-items > strong').append(
-          '<i class="fa-solid fa-circle-info" title="If you create this NPC as an actor, items with potency runes will be given to the actor but the potency run itself will need to be added manually."></i>',
-        );
-
-        $('.aga-create-npc')
-          .show()
-          .on('click', async () => {
-            await Pf2eHelper.createNpc({
-              ...result,
-            });
-          });
-      } catch (error) {
-        console.error(error);
-        $('.aga-response-area').html(
-          '<h3>An error occured, please try again</h3>',
-        );
-      } finally {
-        $('#aga-submit').prop('disabled', false);
-      }
+      this.handleSubmit();
     });
   }
 
-  static parseHtmlFromValue(value: any): string {
-    if (Array.isArray(value))
-      return value.map((v) => Dashboard.parseHtmlFromValue(v)).join(', ');
-    if (typeof value === 'object')
-      return Object.entries(value)
-        .map(
-          ([key, value]) =>
-            `<div class='aga-object-indent'><strong>${Dashboard.capitalizeString(
-              key,
-            )}</strong>: ${Dashboard.parseHtmlFromValue(value)}</div>`,
-        )
-        .join('');
+  private async handleSubmit(): Promise<void> {
+    const userMessage = HtmlHelper.getInput('#aga-user-message');
+    if (!userMessage) return;
 
-    return value;
-  }
+    HtmlHelper.setDisabled('#aga-submit', true);
+    HtmlHelper.renderHtmlToSelector(
+      HtmlHelper.loadingSpinner,
+      '.aga-response-area',
+    );
 
-  private static capitalizeString(str: string): string {
-    return str[0].toUpperCase() + str.slice(1);
+    try {
+      const result = await this.#aiService.createNPC(userMessage);
+
+      // const imagePrompt = `A Pathfinder2e ${result.race ?? 'Human'} ${
+      //   result.class ?? 'Commoner'
+      // } with the following description: ${result.appearance}`;
+
+      // await this.#aiService.createActorIcon(imagePrompt);
+
+      const responseHtml = HtmlHelper.parseHtmlFromValue(
+        result,
+        'aga-response',
+      );
+      HtmlHelper.renderHtmlToSelector(responseHtml, '.aga-response-area');
+      HtmlHelper.prependHtmlToSelector(
+        HtmlHelper.createInfoIcon(
+          `If you create this NPC as an actor, items with potency runes will
+              be given to the actor but the potency run itself will need to be added manually.
+              Items not found in the compendium will be created as items with no data.`,
+        ),
+        '.aga-response-items > strong',
+      );
+
+      $('.aga-create-npc')
+        .show()
+        .on('click', async () => {
+          await Pf2eHelper.createNpc({
+            ...result,
+          });
+        });
+    } catch (error) {
+      console.error(error);
+      HtmlHelper.renderHtmlToSelector(
+        HtmlHelper.genericErrorMessage,
+        '.aga-response-area',
+      );
+    } finally {
+      HtmlHelper.setDisabled('#aga-submit', false);
+    }
   }
 }
