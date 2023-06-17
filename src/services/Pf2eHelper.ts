@@ -19,7 +19,10 @@ const SKILL_LEVEL_MAP: Record<SkillLevel, number> = {
 };
 
 export class Pf2eHelper extends FoundryHelper {
-  static async createNpc(params: Pf2eNpcOutputParams) {
+  static async createNpc(
+    params: Pf2eNpcOutputParams,
+    tokenImageBase64?: string,
+  ) {
     const { name } = params;
 
     const folder = await FoundryHelper.getFolder(
@@ -34,22 +37,38 @@ export class Pf2eHelper extends FoundryHelper {
     const abilities = Pf2eHelper.mapAbilitiesInput(params.abilities);
     const attributes = Pf2eHelper.mapAttributesInput(params);
 
+    const actorData: any = {
+      system: {
+        traits,
+        details,
+        saves,
+        skills,
+        abilities,
+        attributes,
+      },
+    };
+
+    if (tokenImageBase64) {
+      try {
+        const file = await Pf2eHelper.uploadPngBase64(
+          tokenImageBase64,
+          'generated-tokens',
+          name.toLowerCase().replace(' ', '-') + '.png',
+        );
+
+        actorData.img = file.path;
+      } catch (err) {
+        ui.notifications?.error(err);
+      }
+    }
+
     const actor = await Pf2eHelper.createActor(
       {
         name,
         type: 'npc',
         folder: folder.id,
       },
-      {
-        system: {
-          traits,
-          details,
-          saves,
-          skills,
-          abilities,
-          attributes,
-        },
-      },
+      actorData,
     );
 
     // type pf2e items, then loop through and create them, adding characteristics as needed such as potency runes
@@ -212,5 +231,23 @@ export class Pf2eHelper extends FoundryHelper {
     }
 
     return searchResult;
+  }
+
+  public static async uploadPngBase64(
+    url: string,
+    destinationFolder: string,
+    fileName: string,
+  ) {
+    try {
+      await FilePicker.browse('data', destinationFolder);
+    } catch {
+      await FilePicker.createDirectory('data', destinationFolder);
+    } finally {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const file = new File([blob], fileName, { type: `image/png` });
+
+      return await FilePicker.upload('data', destinationFolder, file);
+    }
   }
 }

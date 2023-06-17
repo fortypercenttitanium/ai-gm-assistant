@@ -1,6 +1,6 @@
 export class HtmlHelper {
   public static loadingSpinner =
-    '<div class="loading-container"><div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><h4>Generating NPC...</h4></div>';
+    '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
 
   public static genericErrorMessage =
     '<h3>An error occured, please try again</h3>';
@@ -34,6 +34,13 @@ export class HtmlHelper {
     return value;
   }
 
+  public static renderLoadingSpinner(selector: string, message: string) {
+    HtmlHelper.renderHtmlToSelector(
+      `<div class="aga-loading-container">${HtmlHelper.loadingSpinner}<h4>${message}</h4></div>`,
+      selector,
+    );
+  }
+
   public static capitalizeString(str: string): string {
     return str[0].toUpperCase() + str.slice(1);
   }
@@ -64,5 +71,31 @@ export class HtmlHelper {
 
   public static createInfoIcon(title: string): string {
     return `<i class="fa-solid fa-circle-info" title="${title}"></i>`;
+  }
+
+  public static createImageTagsFromUrls(
+    urls: string[],
+    altText: string = 'image',
+    className: string = 'aga-image',
+  ): string {
+    return urls
+      .map(
+        (url, i) =>
+          `<div class="aga-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
+      )
+      .join('');
+  }
+
+  public static createImageTagsFromBase64(
+    data: string[],
+    altText: string = 'image',
+    className: string = 'aga-image',
+  ): string {
+    return data
+      .map(
+        (url, i) =>
+          `<div class="aga-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
+      )
+      .join('');
   }
 }

@@ -1,4 +1,8 @@
-import { Configuration, OpenAIApi } from 'openai';
+import {
+  Configuration,
+  CreateImageRequestResponseFormatEnum,
+  OpenAIApi,
+} from 'openai';
 import schemas from './schemas.json';
 
 export class OpenAiService {
@@ -43,7 +47,7 @@ export class OpenAiService {
       return result;
     } catch (error) {
       // try to get the string between ```json and ```
-      const regexJson = /```(json)?([^`]*)```/gm;
+      const regexJson = /```(json)?([^`]*)```/gim;
       const matchesJson = regexJson.exec(json);
       if (matchesJson?.[2]) return JSON.parse(matchesJson[2].trim());
 
@@ -69,7 +73,7 @@ export class OpenAiService {
       messages: [
         {
           role: 'system',
-          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. MOST IMPORTANTLY - Make sure the NPC's skill tiers are appropriate for their level! Legendary skills are rare, and should only exist on characters level 10 and above. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
+          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. MOST IMPORTANTLY - an NPC's skills should be appropriate for their level. For example, an NPC below level 10 should not have ANY legendary skills. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
             schemas.npc,
           )}.`,
         },
@@ -89,13 +93,18 @@ export class OpenAiService {
     return OpenAiService.tryParseJSONResponse(messageResult);
   }
 
-  async createActorIcon(prompt: string): Promise<any> {
-    const response = await this.#openai.createImage({
+  async createActorIcons(
+    prompt: string,
+    numberOfImages: number = 4,
+    size: ImageSize = '256x256',
+  ): Promise<any> {
+    return await this.#openai.createImage({
       prompt,
-      n: 4,
-      size: '512x512',
+      n: numberOfImages,
+      size,
+      response_format: CreateImageRequestResponseFormatEnum.B64Json,
     });
-
-    console.log(response);
   }
 }
+
+type ImageSize = '256x256' | '512x512' | '1024x1024';

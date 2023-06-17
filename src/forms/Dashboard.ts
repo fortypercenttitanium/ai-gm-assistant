@@ -56,25 +56,36 @@ export class Dashboard extends FormApplication {
     if (!userMessage) return;
 
     HtmlHelper.setDisabled('#aga-submit', true);
-    HtmlHelper.renderHtmlToSelector(
-      HtmlHelper.loadingSpinner,
-      '.aga-response-area',
-    );
+    HtmlHelper.renderLoadingSpinner('.aga-response-area', 'Generating NPC...');
 
     try {
       const result = await this.#aiService.createNPC(userMessage);
 
-      // const imagePrompt = `A Pathfinder2e ${result.race ?? 'Human'} ${
-      //   result.class ?? 'Commoner'
-      // } with the following description: ${result.appearance}`;
+      HtmlHelper.renderLoadingSpinner(
+        '.aga-response-area',
+        'Generating NPC icons...',
+      );
 
-      // await this.#aiService.createActorIcon(imagePrompt);
+      const imagePrompt = `A Pathfinder2e ${result.race ?? 'Human'} ${
+        result.class ?? 'Commoner'
+      } with the following description: ${result.appearance}`;
+
+      const imagesData = await this.#aiService.createActorIcons(imagePrompt);
+      const images = imagesData?.data.data.map(
+        (d: any) => `data:image/png;base64,${d.b64_json}`,
+      );
+      const imageTags = HtmlHelper.createImageTagsFromBase64(images);
 
       const responseHtml = HtmlHelper.parseHtmlFromValue(
         result,
         'aga-response',
       );
       HtmlHelper.renderHtmlToSelector(responseHtml, '.aga-response-area');
+      HtmlHelper.prependHtmlToSelector(
+        '<h2>Icon Selection</h2>',
+        '.aga-image-container',
+      );
+      HtmlHelper.renderHtmlToSelector(imageTags, '.aga-response-images');
       HtmlHelper.prependHtmlToSelector(
         HtmlHelper.createInfoIcon(
           `If you create this NPC as an actor, items with potency runes will
@@ -84,12 +95,32 @@ export class Dashboard extends FormApplication {
         '.aga-response-items > strong',
       );
 
+      let selectedImageId: null | number = null;
+
+      $('.aga-image-selector').on('click', (event) => {
+        const imageId = $(event.currentTarget).data('imageid');
+        if (selectedImageId === imageId) {
+          selectedImageId = null;
+          $(event.currentTarget).removeClass('selected');
+        } else {
+          selectedImageId = imageId;
+          $('.aga-image-selector.selected').removeClass('selected');
+          $(event.currentTarget).addClass('selected');
+        }
+      });
+
       $('.aga-create-npc')
         .show()
         .on('click', async () => {
-          await Pf2eHelper.createNpc({
-            ...result,
-          });
+          const imageBase64 =
+            selectedImageId !== null ? images?.[selectedImageId] : undefined;
+
+          await Pf2eHelper.createNpc(
+            {
+              ...result,
+            },
+            imageBase64,
+          );
         });
     } catch (error) {
       console.error(error);

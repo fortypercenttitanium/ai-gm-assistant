@@ -26,7 +26,8 @@
 .aga-dashboard {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  min-width: 400px;
+  max-width: 600px;
   max-height: 600px;
   overflow: auto;
 }
@@ -142,7 +143,42 @@
   margin-left: 6px;
 }
 
-.loading-container {
+.aga-response-images {
+  display: flex;
+  gap: 8px;
+}
+
+.aga-image-container {
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
+}
+
+.aga-image-selector {
+  display: flex;
+  padding: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: 0.3s;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.aga-image-selector.selected {
+  background: rgba(255, 255, 255, 0.75);
+  border: 2px solid #4a4b46;
+  box-shadow: 2px 2px 2px #4a4b46;
+}
+
+.aga-image-selector:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.aga-image {
+  width: 120px;
+}
+
+.aga-loading-container {
   display: flex;
   flex-direction: column;
   gap: 8px;

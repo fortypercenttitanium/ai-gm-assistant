@@ -8,7 +8,9 @@ declare global {
   var Dialog: any;
   var FormApplication: any;
   var Item: any;
+  var FilePicker: any;
   var expandObject: Function;
+  var ui: any;
 }
 
 export default global;
