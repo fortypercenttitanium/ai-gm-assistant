@@ -73,29 +73,32 @@ export class HtmlHelper {
     return `<i class="fa-solid fa-circle-info" title="${title}"></i>`;
   }
 
-  public static createImageTagsFromUrls(
+  public static createSaveIconBtn(
+    className: string,
+    htmlProperties: string,
+  ): string {
+    return `<button type="button" class="${className}" ${htmlProperties} title="Save this image - if selected when you create an NPC, it will be saved automatically"><i class='fa-solid fa-lg fa-floppy-disk'></i></button>`;
+  }
+
+  public static createImagesFromUrls(
     urls: string[],
     altText: string = 'image',
     className: string = 'aga-image',
-  ): string {
-    return urls
-      .map(
-        (url, i) =>
-          `<div class="aga-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
-      )
-      .join('');
+  ): string[] {
+    return urls.map(
+      (url, i) =>
+        `<div class="aga-single-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
+    );
   }
 
-  public static createImageTagsFromBase64(
+  public static createImagesFromBase64(
     data: string[],
     altText: string = 'image',
     className: string = 'aga-image',
-  ): string {
-    return data
-      .map(
-        (url, i) =>
-          `<div class="aga-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
-      )
-      .join('');
+  ): string[] {
+    return data.map(
+      (url, i) =>
+        `<div class="aga-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
+    );
   }
 }

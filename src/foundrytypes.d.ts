@@ -11,6 +11,7 @@ declare global {
   var FilePicker: any;
   var expandObject: Function;
   var ui: any;
+  var srcExists: any;
 }
 
 export default global;

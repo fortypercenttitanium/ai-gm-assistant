@@ -63,7 +63,7 @@ export class AiGmAssistantConfig {
         `<li class="player gm aga-assistant-player-bar flexrow">
         <span class="player-active active" style="background: #84cc28; border: 1px solid #ffff50"></span>
         <span class="player-name self">
-        <button type="button" id="aga-assistant-button">
+        <button type="button" class="aga-no-style-button" id="aga-assistant-button">
           GM Assistant
           <i id="aga-robot-icon" class="fa-regular fa-user-robot"></i>
         </button>

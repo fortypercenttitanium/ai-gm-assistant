@@ -19,10 +19,9 @@ const SKILL_LEVEL_MAP: Record<SkillLevel, number> = {
 };
 
 export class Pf2eHelper extends FoundryHelper {
-  static async createNpc(
-    params: Pf2eNpcOutputParams,
-    tokenImageBase64?: string,
-  ) {
+  public static TOKEN_IMAGE_FOLDER = 'generated-tokens';
+
+  static async createNpc(params: Pf2eNpcOutputParams, imageId?: number | null) {
     const { name } = params;
 
     const folder = await FoundryHelper.getFolder(
@@ -48,19 +47,11 @@ export class Pf2eHelper extends FoundryHelper {
       },
     };
 
-    if (tokenImageBase64) {
-      try {
-        const file = await Pf2eHelper.uploadPngBase64(
-          tokenImageBase64,
-          'generated-tokens',
-          name.toLowerCase().replace(' ', '-') + '.png',
-        );
-
-        actorData.img = file.path;
-      } catch (err) {
-        ui.notifications?.error(err);
-      }
-    }
+    if (imageId)
+      actorData.img = `${this.TOKEN_IMAGE_FOLDER}/${this.generateImageFileName(
+        imageId,
+        name,
+      )}`;
 
     const actor = await Pf2eHelper.createActor(
       {
@@ -164,7 +155,7 @@ export class Pf2eHelper extends FoundryHelper {
     };
     const { rarity } = details;
     const size = {
-      value: details.size,
+      value: details.size?.toLowerCase() ?? 'med',
     };
     const senses = { value: details.senses?.join(', ') };
 
@@ -233,6 +224,10 @@ export class Pf2eHelper extends FoundryHelper {
     return searchResult;
   }
 
+  public static async imageExists(url: string): Promise<boolean> {
+    return await srcExists(url);
+  }
+
   public static async uploadPngBase64(
     url: string,
     destinationFolder: string,
@@ -243,11 +238,22 @@ export class Pf2eHelper extends FoundryHelper {
     } catch {
       await FilePicker.createDirectory('data', destinationFolder);
     } finally {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const file = new File([blob], fileName, { type: `image/png` });
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const file = new File([blob], fileName, { type: `image/png` });
 
-      return await FilePicker.upload('data', destinationFolder, file);
+        return await FilePicker.upload('data', destinationFolder, file);
+      } catch (err) {
+        ui.notifications?.error(err);
+      }
     }
+  }
+
+  public static generateImageFileName(
+    imageId: number,
+    characterName: string,
+  ): string {
+    return `${characterName}-${imageId}.png`;
   }
 }

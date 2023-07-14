@@ -74,7 +74,14 @@ export class Dashboard extends FormApplication {
       const images = imagesData?.data.data.map(
         (d: any) => `data:image/png;base64,${d.b64_json}`,
       );
-      const imageTags = HtmlHelper.createImageTagsFromBase64(images);
+      const imageTags = HtmlHelper.createImagesFromBase64(images)
+        .map((image, i) => {
+          return `<div class="aga-single-image-container">${image}${HtmlHelper.createSaveIconBtn(
+            'aga-image-save-btn',
+            `data-imagesave="${i}"`,
+          )}</div>`;
+        })
+        .join('');
 
       const responseHtml = HtmlHelper.parseHtmlFromValue(
         result,
@@ -109,17 +116,42 @@ export class Dashboard extends FormApplication {
         }
       });
 
+      $('.aga-image-save-btn').on('click', (event) => {
+        const imageId = $(event.currentTarget).data('imagesave');
+        var fileName = Pf2eHelper.generateImageFileName(imageId, result.name);
+        Pf2eHelper.uploadPngBase64(
+          images[imageId],
+          Pf2eHelper.TOKEN_IMAGE_FOLDER,
+          fileName,
+        );
+        $(event.currentTarget).prop('disabled', true);
+        $(event.currentTarget).html('<i class="fa-solid fa-check"></i>');
+      });
+
       $('.aga-create-npc')
         .show()
         .on('click', async () => {
-          const imageBase64 =
-            selectedImageId !== null ? images?.[selectedImageId] : undefined;
-
+          if (selectedImageId !== null) {
+            var fileName = Pf2eHelper.generateImageFileName(
+              selectedImageId,
+              result.name,
+            );
+            var imageExists = await Pf2eHelper.imageExists(
+              `${Pf2eHelper.TOKEN_IMAGE_FOLDER}/${fileName}`,
+            );
+            if (!imageExists) {
+              await Pf2eHelper.uploadPngBase64(
+                images[selectedImageId],
+                Pf2eHelper.TOKEN_IMAGE_FOLDER,
+                fileName,
+              );
+            }
+          }
           await Pf2eHelper.createNpc(
             {
               ...result,
             },
-            imageBase64,
+            selectedImageId,
           );
         });
     } catch (error) {

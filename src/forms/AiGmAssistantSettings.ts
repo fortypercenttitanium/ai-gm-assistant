@@ -110,7 +110,7 @@ export class AiGmAssistantSettings extends FormApplication {
     });
 
     Object.values(this.images).forEach((image) => {
-      $(`#${image.id}`).click(() => {
+      $(`#${image.id}`).on('click', () => {
         new ImagePopout(image.src, {
           title: image.text,
           shareable: false,

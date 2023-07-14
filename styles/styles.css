@@ -6,7 +6,7 @@
   margin-left: 4px;
 }
 
-#aga-assistant-button {
+.aga-no-style-button {
   background: none;
   color: inherit;
   border: none;
@@ -18,7 +18,7 @@
   margin: auto;
 }
 
-#aga-assistant-button:hover {
+.aga-no-style-button:hover {
   box-shadow: none;
   border: none;
 }
@@ -162,6 +162,13 @@
   transition: 0.3s;
   cursor: pointer;
   border: 2px solid transparent;
+}
+
+.aga-image-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .aga-image-selector.selected {
