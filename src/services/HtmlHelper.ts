@@ -1,3 +1,5 @@
+import { GeneratedImageData } from '../types/GeneratedImageData';
+
 export class HtmlHelper {
   public static loadingSpinner =
     '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
@@ -92,13 +94,13 @@ export class HtmlHelper {
   }
 
   public static createImagesFromBase64(
-    data: string[],
+    data: GeneratedImageData[],
     altText: string = 'image',
     className: string = 'aga-image',
   ): string[] {
     return data.map(
-      (url, i) =>
-        `<div class="aga-image-selector" data-imageid="${i}"><img src="${url}" alt="${altText}${i}" class="${className}" /></div>`,
+      (image, i) =>
+        `<div class="aga-image-selector" data-imageid="${i}"><img src="${image.url}" alt="${altText}${i}" class="${className}" /></div>`,
     );
   }
 }

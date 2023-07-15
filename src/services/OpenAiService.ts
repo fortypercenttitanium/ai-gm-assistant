@@ -94,16 +94,24 @@ export class OpenAiService {
   }
 
   async createActorIcons(
-    prompt: string,
+    race: string,
+    className: string,
+    appearance: string,
     numberOfImages: number = 4,
     size: ImageSize = '256x256',
-  ): Promise<any> {
-    return await this.#openai.createImage({
+  ): Promise<string[]> {
+    const prompt = `A Pathfinder2e ${race ?? 'Human'} ${
+      className ?? 'Commoner'
+    } with the following description: ${appearance ?? 'Average in every way.'}`;
+
+    const images = await this.#openai.createImage({
       prompt,
       n: numberOfImages,
       size,
       response_format: CreateImageRequestResponseFormatEnum.B64Json,
     });
+
+    return images.data.data.map((d) => `data:image/png;base64,${d.b64_json}`);
   }
 }
 

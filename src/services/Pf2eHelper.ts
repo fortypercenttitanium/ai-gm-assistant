@@ -1,3 +1,5 @@
+import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig';
+import { GeneratedImageData } from '../types/GeneratedImageData';
 import {
   SkillLevel,
   Pf2eNpcOutputParams,
@@ -19,9 +21,10 @@ const SKILL_LEVEL_MAP: Record<SkillLevel, number> = {
 };
 
 export class Pf2eHelper extends FoundryHelper {
-  public static TOKEN_IMAGE_FOLDER = 'generated-tokens';
-
-  static async createNpc(params: Pf2eNpcOutputParams, imageId?: number | null) {
+  static async createNpc(
+    params: Pf2eNpcOutputParams,
+    image?: GeneratedImageData,
+  ) {
     const { name } = params;
 
     const folder = await FoundryHelper.getFolder(
@@ -47,11 +50,8 @@ export class Pf2eHelper extends FoundryHelper {
       },
     };
 
-    if (imageId)
-      actorData.img = `${this.TOKEN_IMAGE_FOLDER}/${this.generateImageFileName(
-        imageId,
-        name,
-      )}`;
+    if (image)
+      actorData.img = `${AiGmAssistantConfig.DEFAULTS.TOKEN_IMAGE_FOLDER}/${image.fileName}`;
 
     const actor = await Pf2eHelper.createActor(
       {
@@ -248,12 +248,5 @@ export class Pf2eHelper extends FoundryHelper {
         ui.notifications?.error(err);
       }
     }
-  }
-
-  public static generateImageFileName(
-    imageId: number,
-    characterName: string,
-  ): string {
-    return `${characterName}-${imageId}.png`;
   }
 }

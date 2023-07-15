@@ -14,6 +14,11 @@ export class AiGmAssistantConfig {
     SETTINGS_MENU: 'ai-gm-settings-menu',
   };
 
+  static DEFAULTS = {
+    ACTOR_FOLDER: 'Generated',
+    TOKEN_IMAGE_FOLDER: 'generated-tokens',
+  };
+
   static log(force: any, ...args: any[]) {
     const shouldLog =
       force ||

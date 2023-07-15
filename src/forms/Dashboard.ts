@@ -2,10 +2,12 @@ import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig.js';
 import { OpenAiService } from '../services/OpenAiService.js';
 import { Pf2eHelper } from '../services/Pf2eHelper.js';
 import { HtmlHelper } from '../services/HtmlHelper.js';
+import { DashboardController } from '../services/DashboardController.js';
 
 export class Dashboard extends FormApplication {
-  #aiService;
-  #apiKey;
+  #aiService: OpenAiService;
+  #apiKey: string;
+
   constructor() {
     super();
     this.#apiKey = game.settings.get(
@@ -17,7 +19,6 @@ export class Dashboard extends FormApplication {
   }
 
   static ID = 'aga-dashboard';
-  static FOLDER_NAME = 'Generated';
 
   static get defaultOptions() {
     const defaults = super.defaultOptions;
@@ -66,15 +67,15 @@ export class Dashboard extends FormApplication {
         'Generating NPC icons...',
       );
 
-      const imagePrompt = `A Pathfinder2e ${result.race ?? 'Human'} ${
-        result.class ?? 'Commoner'
-      } with the following description: ${result.appearance}`;
-
-      const imagesData = await this.#aiService.createActorIcons(imagePrompt);
-      const images = imagesData?.data.data.map(
-        (d: any) => `data:image/png;base64,${d.b64_json}`,
+      const images = await this.#aiService.createActorIcons(
+        result.race,
+        result.class,
+        result.appearance,
       );
-      const imageTags = HtmlHelper.createImagesFromBase64(images)
+      DashboardController.setNpcImages(images, result.name ?? 'unknown');
+      const imageTags = HtmlHelper.createImagesFromBase64(
+        DashboardController.npcImages,
+      )
         .map((image, i) => {
           return `<div class="aga-single-image-container">${image}${HtmlHelper.createSaveIconBtn(
             'aga-image-save-btn',
@@ -102,27 +103,25 @@ export class Dashboard extends FormApplication {
         '.aga-response-items > strong',
       );
 
-      let selectedImageId: null | number = null;
-
       $('.aga-image-selector').on('click', (event) => {
         const imageId = $(event.currentTarget).data('imageid');
-        if (selectedImageId === imageId) {
-          selectedImageId = null;
+        if (DashboardController.selectedNpcImage === imageId) {
+          DashboardController.selectedNpcImage = null;
           $(event.currentTarget).removeClass('selected');
         } else {
-          selectedImageId = imageId;
+          DashboardController.selectedNpcImage = imageId;
           $('.aga-image-selector.selected').removeClass('selected');
           $(event.currentTarget).addClass('selected');
         }
       });
 
-      $('.aga-image-save-btn').on('click', (event) => {
+      $('.aga-image-save-btn').on('click', async (event) => {
         const imageId = $(event.currentTarget).data('imagesave');
-        var fileName = Pf2eHelper.generateImageFileName(imageId, result.name);
-        Pf2eHelper.uploadPngBase64(
-          images[imageId],
-          Pf2eHelper.TOKEN_IMAGE_FOLDER,
-          fileName,
+        const image = DashboardController.npcImages[imageId];
+        await Pf2eHelper.uploadPngBase64(
+          image.url,
+          AiGmAssistantConfig.DEFAULTS.TOKEN_IMAGE_FOLDER,
+          image.fileName,
         );
         $(event.currentTarget).prop('disabled', true);
         $(event.currentTarget).html('<i class="fa-solid fa-check"></i>');
@@ -131,27 +130,19 @@ export class Dashboard extends FormApplication {
       $('.aga-create-npc')
         .show()
         .on('click', async () => {
-          if (selectedImageId !== null) {
-            var fileName = Pf2eHelper.generateImageFileName(
-              selectedImageId,
-              result.name,
+          const image = DashboardController.getSelectedImage();
+          if (image && !image.uploaded) {
+            await Pf2eHelper.uploadPngBase64(
+              image.url,
+              AiGmAssistantConfig.DEFAULTS.TOKEN_IMAGE_FOLDER,
+              image.fileName,
             );
-            var imageExists = await Pf2eHelper.imageExists(
-              `${Pf2eHelper.TOKEN_IMAGE_FOLDER}/${fileName}`,
-            );
-            if (!imageExists) {
-              await Pf2eHelper.uploadPngBase64(
-                images[selectedImageId],
-                Pf2eHelper.TOKEN_IMAGE_FOLDER,
-                fileName,
-              );
-            }
           }
           await Pf2eHelper.createNpc(
             {
               ...result,
             },
-            selectedImageId,
+            image,
           );
         });
     } catch (error) {
