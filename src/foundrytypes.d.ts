@@ -12,6 +12,7 @@ declare global {
   var expandObject: Function;
   var ui: any;
   var srcExists: any;
+  var Handlebars: any;
 }
 
 export default global;

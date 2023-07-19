@@ -1,4 +1,4 @@
-import { GeneratedImageData } from '../types/GeneratedImageData';
+import { GeneratedImageData } from '../types/AgaTypes';
 
 export class DashboardController {
   public static selectedNpcImage: number | null = null;

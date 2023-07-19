@@ -1,8 +1,9 @@
-import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig.js';
+import { Config } from '../config/Config.js';
 import { OpenAiService } from '../services/OpenAiService.js';
 import { Pf2eHelper } from '../services/Pf2eHelper.js';
 import { HtmlHelper } from '../services/HtmlHelper.js';
 import { DashboardController } from '../services/DashboardController.js';
+import { GeneratorSettingsForm } from './GeneratorSettingsForm.js';
 
 export class Dashboard extends FormApplication {
   #aiService: OpenAiService;
@@ -10,10 +11,7 @@ export class Dashboard extends FormApplication {
 
   constructor() {
     super();
-    this.#apiKey = game.settings.get(
-      AiGmAssistantConfig.ID,
-      AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
-    );
+    this.#apiKey = game.settings.get(Config.ID, Config.SETTINGS.OPENAI_API_KEY);
     this.#aiService = new OpenAiService(this.#apiKey);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -27,7 +25,7 @@ export class Dashboard extends FormApplication {
       height: 'auto',
       width: 'auto',
       id: this.ID,
-      template: AiGmAssistantConfig.TEMPLATES.DASHBOARD,
+      template: Config.TEMPLATES.DASHBOARD,
       title: 'AI GM Assistant Dashboard',
     };
 
@@ -36,10 +34,7 @@ export class Dashboard extends FormApplication {
 
   async getData() {
     return {
-      agaApiKey: game.settings.get(
-        AiGmAssistantConfig.ID,
-        AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
-      ),
+      agaApiKey: game.settings.get(Config.ID, Config.SETTINGS.OPENAI_API_KEY),
       status: await this.#aiService.getCurrentStatus(),
     };
   }
@@ -49,6 +44,10 @@ export class Dashboard extends FormApplication {
 
     $('#aga-submit').on('click', async () => {
       this.handleSubmit();
+    });
+
+    $('#aga-open-settings-dashboard').on('click', () => {
+      new GeneratorSettingsForm().render(true);
     });
   }
 
@@ -120,7 +119,7 @@ export class Dashboard extends FormApplication {
         const image = DashboardController.npcImages[imageId];
         await Pf2eHelper.uploadPngBase64(
           image.url,
-          AiGmAssistantConfig.DEFAULTS.TOKEN_IMAGE_FOLDER,
+          Config.DEFAULTS.TOKEN_IMAGE_FOLDER,
           image.fileName,
         );
         $(event.currentTarget).prop('disabled', true);
@@ -134,7 +133,7 @@ export class Dashboard extends FormApplication {
           if (image && !image.uploaded) {
             await Pf2eHelper.uploadPngBase64(
               image.url,
-              AiGmAssistantConfig.DEFAULTS.TOKEN_IMAGE_FOLDER,
+              Config.DEFAULTS.TOKEN_IMAGE_FOLDER,
               image.fileName,
             );
           }

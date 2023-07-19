@@ -1,0 +1,45 @@
+<form class="aga-generator-settings-form">
+  <h2>NPC Generator Settings</h2>
+  <h3>Properties to generate</h3>
+  <div class="aga-info-tip">
+    <i class="fas fa-lg fa-info-circle"></i>
+    <p>Choosing fewer properties will slightly decrease token usage</p>
+  </div>
+  <div class="aga-npc-properties-settings-container">
+  {{#each npc.properties}}
+    <div class="aga-npc-properties-settings-property">
+    <input type="checkbox" name="npc{{capitalize @key}}" id="{{@key}}" {{#if this}}checked{{/if}}></input>
+    <label for="{{@key}}">{{capitalize @key}}</label>
+    </div>
+  {{/each}}
+  </div>
+  <h3>Images</h3>
+  <div class="aga-should-generate-container">
+  <input type="checkbox" name="npcShouldGenerateImages" id="should-generate-images"></input>
+  <label for="should-generate-images">Generate images</label>
+  </div>
+
+  <div class="aga-image-options">
+    <div class="aga-image-size-container">
+      <label for="npc-image-size">Image size:</label>
+      <div class="aga-image-size-radio">
+        <input type="radio" name="npcImageSize" id="image-size-256" value="256x256"></input>
+        <label for="image-size-256">256x256</label>
+      </div>
+      <div class="aga-image-size-radio">
+        <input type="radio" name="npcImageSize" id="image-size-512" value="512x512"></input>
+        <label for="image-size-512">512x512</label>
+      </div>
+      <div class="aga-image-size-radio">
+        <input type="radio" name="npcImageSize" id="image-size-1024" value="1024x1024"></input>
+        <label for="image-size-1024">1024x1024</label>
+      </div>
+    </div>
+    <div class="aga-image-count-container">
+      <label for="npc-image-count">Image count <span class="aga-image-cost"></span></label>
+      {{numberInput npc.images.count name="npcImageCount" step=1 min=1 max=8}}
+    </div>
+  </div>
+
+  <button class="aga-generator-settings-save-button">Save</button>
+</form>

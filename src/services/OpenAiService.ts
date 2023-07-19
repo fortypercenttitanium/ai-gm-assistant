@@ -3,7 +3,7 @@ import {
   CreateImageRequestResponseFormatEnum,
   OpenAIApi,
 } from 'openai';
-import schemas from './schemas.json';
+import schemas from '../config/schemas.json';
 
 export class OpenAiService {
   #openai;
@@ -74,7 +74,7 @@ export class OpenAiService {
         {
           role: 'system',
           content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. MOST IMPORTANTLY - an NPC's skills should be appropriate for their level. For example, an NPC below level 10 should not have ANY legendary skills. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
-            schemas.npc,
+            schemas.pf2e.npc,
           )}.`,
         },
         {
@@ -115,4 +115,4 @@ export class OpenAiService {
   }
 }
 
-type ImageSize = '256x256' | '512x512' | '1024x1024';
+export type ImageSize = '256x256' | '512x512' | '1024x1024';

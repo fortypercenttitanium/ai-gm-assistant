@@ -1,22 +1,31 @@
 import { Dashboard } from '../forms/Dashboard.js';
-import { AiGmAssistantSettings } from '../forms/AiGmAssistantSettings.js';
+import { GameSystem } from '../types/FoundryTypes.js';
+import { GameSettings } from './GameSettings.js';
 
-export class AiGmAssistantConfig {
+export class Config {
   static ID = 'ai-gm-assistant';
 
   static TEMPLATES = {
     DASHBOARD: `modules/${this.ID}/templates/dashboard.hbs`,
-    SETTINGS: `modules/${this.ID}/templates/settings.hbs`,
+    API_SETTINGS: `modules/${this.ID}/templates/apisettings.hbs`,
+    GENERATOR_SETTINGS: `modules/${this.ID}/templates/generatorsettings.hbs`,
   };
 
   static SETTINGS = {
     OPENAI_API_KEY: 'open-api-key',
-    SETTINGS_MENU: 'ai-gm-settings-menu',
+    API_SETTINGS_MENU: 'ai-gm-api-settings-menu',
+    GENERATOR_SETTINGS_MENU: 'ai-gm-generator-settings-menu',
+    GENERATOR_SETTINGS: 'ai-gm-generator-settings',
   };
 
   static DEFAULTS = {
     ACTOR_FOLDER: 'Generated',
     TOKEN_IMAGE_FOLDER: 'generated-tokens',
+  };
+
+  static SYSTEM: GameSystem = {
+    id: '',
+    title: '',
   };
 
   static log(force: any, ...args: any[]) {
@@ -30,26 +39,36 @@ export class AiGmAssistantConfig {
   }
 
   static initialize() {
+    const { id, title } = game.system;
+    this.SYSTEM = { id, title };
     this.registerSettings();
+    this.registerHandlebarsHelpers();
   }
 
   static registerSettings() {
-    game.settings.registerMenu(this.ID, this.SETTINGS.SETTINGS_MENU, {
-      name: 'Open API Key',
-      label: 'Set your OpenAI API Key',
-      type: AiGmAssistantSettings,
-      icon: 'fas fa-robot',
-      restricted: true,
-      scope: 'client',
-      config: true,
-    });
+    game.settings.registerMenu(
+      this.ID,
+      this.SETTINGS.API_SETTINGS_MENU,
+      GameSettings.ApiKeySettings.menuOptions,
+    );
 
-    game.settings.register(this.ID, this.SETTINGS.OPENAI_API_KEY, {
-      name: 'Open API Key',
-      config: false,
-      type: String,
-      default: '',
-    });
+    game.settings.register(
+      this.ID,
+      this.SETTINGS.OPENAI_API_KEY,
+      GameSettings.ApiKeySettings.settingsOptions,
+    );
+
+    game.settings.registerMenu(
+      this.ID,
+      this.SETTINGS.GENERATOR_SETTINGS_MENU,
+      GameSettings.GeneratorSettings.menuOptions,
+    );
+
+    game.settings.register(
+      this.ID,
+      this.SETTINGS.GENERATOR_SETTINGS,
+      GameSettings.GeneratorSettings.settingsOptions,
+    );
   }
 
   static registerHooks() {
@@ -81,6 +100,18 @@ export class AiGmAssistantConfig {
           new Dashboard().render(true);
         });
       }
+    });
+  }
+
+  static registerHandlebarsHelpers() {
+    Handlebars.registerHelper('capitalize', function (value: any) {
+      // Check if the value is a string
+      if (typeof value === 'string') {
+        // Capitalize the first letter
+        return value.charAt(0).toUpperCase() + value.slice(1);
+      }
+
+      return value;
     });
   }
 }

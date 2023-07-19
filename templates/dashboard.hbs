@@ -1,4 +1,22 @@
 <form class='aga-dashboard'>
+  <div class='aga-dashboard-heading-container'>
+    <h2>AI GM Assistant Dashboard</h2>
+    <div class='aga-dashboard-heading-job-select-container'>
+      <div class='aga-select-with-label'>
+        <label for='aga-assistant-type-selection'>Select Assistant Job:</label>
+        <select
+          name='aga-assistant-type-selection'
+          id='aga-assistant-type-selection'
+          class='aga-assistant-type-selection'
+        >
+          <option value='npc-generator'>Generate NPC</option>
+        </select>
+      </div>
+      <button type='button' id='aga-open-settings-dashboard'><i
+          class='fas fa-cogs'
+        ></i>Settings</button>
+    </div>
+  </div>
   {{#if (eq status 'ready')}}
     <div class='aga-response-container'>
       <textarea
@@ -13,12 +31,12 @@
       <button type='button' class='aga-create-npc'>Create NPC as Actor</button>
     </div>
   {{else if (eq status 'api_key_invalid')}}
-    <h1>Invalid API Key</h1>
+    <h2>Invalid API Key</h2>
     <h3>
       Please visit the module settings to set your API key!
     </h3>
   {{else if (eq status 'error')}}
-    <h1>Error</h1>
+    <h2>Error</h2>
     <h3>
       An error occurred, please try again later
     </h3>

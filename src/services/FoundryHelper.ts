@@ -50,4 +50,16 @@ export class FoundryHelper {
       },
     );
   }
+
+  static notify(message: string) {
+    ui.notifications.info(message);
+  }
+
+  static warn(message: string) {
+    ui.notifications.warn(message);
+  }
+
+  static error(message: string) {
+    ui.notifications.error(message);
+  }
 }

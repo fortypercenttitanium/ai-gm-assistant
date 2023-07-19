@@ -1,3 +1,3 @@
-import { AiGmAssistantConfig } from './config/AiGmAssistantConfig';
+import { Config } from './config/Config';
 
-AiGmAssistantConfig.registerHooks();
+Config.registerHooks();

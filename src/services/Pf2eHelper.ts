@@ -1,5 +1,5 @@
-import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig';
-import { GeneratedImageData } from '../types/GeneratedImageData';
+import { Config } from '../config/Config';
+import { GeneratedImageData } from '../types/AgaTypes';
 import {
   SkillLevel,
   Pf2eNpcOutputParams,
@@ -51,7 +51,7 @@ export class Pf2eHelper extends FoundryHelper {
     };
 
     if (image)
-      actorData.img = `${AiGmAssistantConfig.DEFAULTS.TOKEN_IMAGE_FOLDER}/${image.fileName}`;
+      actorData.img = `${Config.DEFAULTS.TOKEN_IMAGE_FOLDER}/${image.fileName}`;
 
     const actor = await Pf2eHelper.createActor(
       {

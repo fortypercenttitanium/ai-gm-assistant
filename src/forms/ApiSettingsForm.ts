@@ -1,4 +1,5 @@
-import { AiGmAssistantConfig } from '../config/AiGmAssistantConfig';
+import { Config } from '../config/Config';
+import { FoundryHelper } from '../services/FoundryHelper';
 
 export type AgaImage = {
   id: string;
@@ -6,7 +7,7 @@ export type AgaImage = {
   text: string;
 };
 
-export class AiGmAssistantSettings extends FormApplication {
+export class ApiSettingsForm extends FormApplication {
   images: { [key: string]: AgaImage };
 
   constructor() {
@@ -15,38 +16,38 @@ export class AiGmAssistantSettings extends FormApplication {
     this.images = {
       step1: {
         id: 'step1',
-        src: `modules/${AiGmAssistantConfig.ID}/assets/step1.png`,
+        src: `modules/${Config.ID}/assets/step1.png`,
         text: 'OpenAI signup page',
       },
       step2: {
         id: 'step2',
-        src: `modules/${AiGmAssistantConfig.ID}/assets/step2.png`,
+        src: `modules/${Config.ID}/assets/step2.png`,
         text: 'OpenAI selection page',
       },
       step3: {
         id: 'step3',
-        src: `modules/${AiGmAssistantConfig.ID}/assets/step3.png`,
+        src: `modules/${Config.ID}/assets/step3.png`,
         text: 'OpenAI profile icon',
       },
       step4: {
         id: 'step4',
-        src: `modules/${AiGmAssistantConfig.ID}/assets/step4.png`,
+        src: `modules/${Config.ID}/assets/step4.png`,
         text: 'OpenAI API Keys',
       },
       step5: {
         id: 'step5',
-        src: `modules/${AiGmAssistantConfig.ID}/assets/step5.png`,
+        src: `modules/${Config.ID}/assets/step5.png`,
         text: 'OpenAI create new secret key',
       },
       step6: {
         id: 'step6',
-        src: `modules/${AiGmAssistantConfig.ID}/assets/step6.png`,
+        src: `modules/${Config.ID}/assets/step6.png`,
         text: 'OpenAI create secret key',
       },
     };
   }
 
-  static ID = 'aga-assistant-settings';
+  static ID = 'aga-assistant-api-settings';
 
   static get defaultOptions() {
     const defaults = super.defaultOptions;
@@ -54,8 +55,8 @@ export class AiGmAssistantSettings extends FormApplication {
       height: 'auto',
       width: 600,
       id: this.ID,
-      template: AiGmAssistantConfig.TEMPLATES.SETTINGS,
-      title: 'AI GM Assistant Settings',
+      template: Config.TEMPLATES.API_SETTINGS,
+      title: 'AI GM Assistant API Settings',
       closeOnSubmit: false,
     };
 
@@ -73,22 +74,18 @@ export class AiGmAssistantSettings extends FormApplication {
       defaultYes: false,
     });
 
-    if (confirmed)
-      game.settings.set(
-        AiGmAssistantConfig.ID,
-        AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
-        agaApiKey,
-      );
+    if (confirmed) {
+      game.settings.set(Config.ID, Config.SETTINGS.OPENAI_API_KEY, agaApiKey);
+
+      FoundryHelper.notify('API Key saved!');
+    }
 
     return this.render(true);
   }
 
   getData() {
     return {
-      agaApiKey: game.settings.get(
-        AiGmAssistantConfig.ID,
-        AiGmAssistantConfig.SETTINGS.OPENAI_API_KEY,
-      ),
+      agaApiKey: game.settings.get(Config.ID, Config.SETTINGS.OPENAI_API_KEY),
       images: this.images,
     };
   }
@@ -96,7 +93,7 @@ export class AiGmAssistantSettings extends FormApplication {
   activateListeners(html: any) {
     super.activateListeners(html);
 
-    $('.aga-toggle-api-visible').click(() => {
+    $('.aga-toggle-api-visible').on('click', () => {
       var apiField = $('#agaApiKey');
       var eyeIcon = $('.aga-toggle-api-visible > i');
 
