@@ -1,4 +1,5 @@
-import { GeneratedImageData } from '../types/AgaTypes';
+import { Config } from '../config/Config';
+import { GeneratedImageData, GeneratorSettings } from '../types/AgaTypes';
 
 export class DashboardController {
   public static selectedNpcImage: number | null = null;
@@ -22,5 +23,13 @@ export class DashboardController {
   public static getSelectedImage(): GeneratedImageData | undefined {
     if (DashboardController.selectedNpcImage == null) return undefined;
     return DashboardController.npcImages[DashboardController.selectedNpcImage];
+  }
+
+  public static getGeneratorSettings(): GeneratorSettings {
+    const settings = game.settings.get(
+      Config.ID,
+      Config.SETTINGS.GENERATOR_SETTINGS,
+    );
+    return settings.current ?? settings.default;
   }
 }

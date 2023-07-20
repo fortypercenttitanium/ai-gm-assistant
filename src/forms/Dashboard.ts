@@ -55,44 +55,80 @@ export class Dashboard extends FormApplication {
     const userMessage = HtmlHelper.getInput('#aga-user-message');
     if (!userMessage) return;
 
+    const settings = DashboardController.getGeneratorSettings();
+
     HtmlHelper.setDisabled('#aga-submit', true);
     HtmlHelper.renderLoadingSpinner('.aga-response-area', 'Generating NPC...');
 
     try {
-      const result = await this.#aiService.createNPC(userMessage);
+      const systemMessage = Pf2eHelper.createNPCSytemMessage(settings.pf2e.npc);
+      const result = await this.#aiService.createNPC(
+        userMessage,
+        systemMessage,
+      );
 
       HtmlHelper.renderLoadingSpinner(
         '.aga-response-area',
         'Generating NPC icons...',
       );
 
-      const images = await this.#aiService.createActorIcons(
-        result.race,
-        result.class,
-        result.appearance,
-      );
-      DashboardController.setNpcImages(images, result.name ?? 'unknown');
-      const imageTags = HtmlHelper.createImagesFromBase64(
-        DashboardController.npcImages,
-      )
-        .map((image, i) => {
-          return `<div class="aga-single-image-container">${image}${HtmlHelper.createSaveIconBtn(
-            'aga-image-save-btn',
-            `data-imagesave="${i}"`,
-          )}</div>`;
-        })
-        .join('');
+      if (settings.pf2e.npc.images.shouldGenerate) {
+        const images = await this.#aiService.createActorIcons(
+          result.race,
+          result.class,
+          result.appearance,
+        );
+
+        DashboardController.setNpcImages(images, result.name ?? 'unknown');
+        const imageTags = HtmlHelper.createImagesFromBase64(
+          DashboardController.npcImages,
+        )
+          .map((image, i) => {
+            return `<div class="aga-single-image-container">${image}${HtmlHelper.createSaveIconBtn(
+              'aga-image-save-btn',
+              `data-imagesave="${i}"`,
+            )}</div>`;
+          })
+          .join('');
+
+        HtmlHelper.prependHtmlToSelector(
+          '<h2>Icon Selection</h2>',
+          '.aga-image-container',
+        );
+        HtmlHelper.renderHtmlToSelector(imageTags, '.aga-response-images');
+
+        $('.aga-image-selector').on('click', (event) => {
+          const imageId = $(event.currentTarget).data('imageid');
+          if (DashboardController.selectedNpcImage === imageId) {
+            DashboardController.selectedNpcImage = null;
+            $(event.currentTarget).removeClass('selected');
+          } else {
+            DashboardController.selectedNpcImage = imageId;
+            $('.aga-image-selector.selected').removeClass('selected');
+            $(event.currentTarget).addClass('selected');
+          }
+        });
+
+        $('.aga-image-save-btn').on('click', async (event) => {
+          const imageId = $(event.currentTarget).data('imagesave');
+          const image = DashboardController.npcImages[imageId];
+          await Pf2eHelper.uploadPngBase64(
+            image.url,
+            Config.DEFAULTS.TOKEN_IMAGE_FOLDER,
+            image.fileName,
+          );
+          image.uploaded = true;
+          $(event.currentTarget).prop('disabled', true);
+          $(event.currentTarget).html('<i class="fa-solid fa-check"></i>');
+        });
+      }
 
       const responseHtml = HtmlHelper.parseHtmlFromValue(
         result,
         'aga-response',
       );
       HtmlHelper.renderHtmlToSelector(responseHtml, '.aga-response-area');
-      HtmlHelper.prependHtmlToSelector(
-        '<h2>Icon Selection</h2>',
-        '.aga-image-container',
-      );
-      HtmlHelper.renderHtmlToSelector(imageTags, '.aga-response-images');
+
       HtmlHelper.prependHtmlToSelector(
         HtmlHelper.createInfoIcon(
           `If you create this NPC as an actor, items with potency runes will
@@ -101,30 +137,6 @@ export class Dashboard extends FormApplication {
         ),
         '.aga-response-items > strong',
       );
-
-      $('.aga-image-selector').on('click', (event) => {
-        const imageId = $(event.currentTarget).data('imageid');
-        if (DashboardController.selectedNpcImage === imageId) {
-          DashboardController.selectedNpcImage = null;
-          $(event.currentTarget).removeClass('selected');
-        } else {
-          DashboardController.selectedNpcImage = imageId;
-          $('.aga-image-selector.selected').removeClass('selected');
-          $(event.currentTarget).addClass('selected');
-        }
-      });
-
-      $('.aga-image-save-btn').on('click', async (event) => {
-        const imageId = $(event.currentTarget).data('imagesave');
-        const image = DashboardController.npcImages[imageId];
-        await Pf2eHelper.uploadPngBase64(
-          image.url,
-          Config.DEFAULTS.TOKEN_IMAGE_FOLDER,
-          image.fileName,
-        );
-        $(event.currentTarget).prop('disabled', true);
-        $(event.currentTarget).html('<i class="fa-solid fa-check"></i>');
-      });
 
       $('.aga-create-npc')
         .show()
@@ -141,7 +153,7 @@ export class Dashboard extends FormApplication {
             {
               ...result,
             },
-            image,
+            { image, privateNotes: responseHtml },
           );
         });
     } catch (error) {

@@ -3,7 +3,6 @@ import {
   CreateImageRequestResponseFormatEnum,
   OpenAIApi,
 } from 'openai';
-import schemas from '../config/schemas.json';
 
 export class OpenAiService {
   #openai;
@@ -23,7 +22,7 @@ export class OpenAiService {
     this.#openai = new OpenAIApi(config);
   }
 
-  static STATUS = {
+  public static STATUS = {
     READY: 'ready',
     ERROR: 'error',
     API_KEY_INVALID: 'api_key_invalid',
@@ -68,14 +67,12 @@ export class OpenAiService {
     }
   }
 
-  async createNPC(userMessage: string) {
+  async createNPC(userMessage: string, systemMessage: string) {
     const result = await this.#openai.createChatCompletion({
       messages: [
         {
           role: 'system',
-          content: `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. MOST IMPORTANTLY - an NPC's skills should be appropriate for their level. For example, an NPC below level 10 should not have ANY legendary skills. Try to avoid giving the characters names that already exist in popular works. Here is the schema: ${JSON.stringify(
-            schemas.pf2e.npc,
-          )}.`,
+          content: systemMessage,
         },
         {
           role: 'user',

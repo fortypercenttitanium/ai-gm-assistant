@@ -62,4 +62,19 @@ export class FoundryHelper {
   static error(message: string) {
     ui.notifications.error(message);
   }
+
+  public static applySettingsToSchema(schema: any, settings: any): any {
+    const result: any = {};
+    Object.keys(settings).forEach((key) => {
+      const value = settings[key];
+      if (typeof value === 'object') {
+        result[key] = this.applySettingsToSchema(schema[key], value);
+        return;
+      }
+      if (value) {
+        result[key] = schema[key];
+      }
+    });
+    return result;
+  }
 }

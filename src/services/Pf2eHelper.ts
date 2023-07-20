@@ -1,5 +1,6 @@
 import { Config } from '../config/Config';
-import { GeneratedImageData } from '../types/AgaTypes';
+import { schemas } from '../config/schemas';
+import { GeneratedImageData, Pf2eNpcSettings } from '../types/AgaTypes';
 import {
   SkillLevel,
   Pf2eNpcOutputParams,
@@ -20,10 +21,15 @@ const SKILL_LEVEL_MAP: Record<SkillLevel, number> = {
   legendary: 9,
 };
 
-export class Pf2eHelper extends FoundryHelper {
+export type CreateNPCOptions = {
+  privateNotes?: string;
+  image?: GeneratedImageData;
+};
+
+export class Pf2eHelper {
   static async createNpc(
     params: Pf2eNpcOutputParams,
-    image?: GeneratedImageData,
+    { image, privateNotes }: CreateNPCOptions = {},
   ) {
     const { name } = params;
 
@@ -33,7 +39,7 @@ export class Pf2eHelper extends FoundryHelper {
     );
 
     const traits = Pf2eHelper.mapTraitsInput(params);
-    const details = Pf2eHelper.mapDetailsInput(params);
+    const details = Pf2eHelper.mapDetailsInput(params, privateNotes);
     const saves = Pf2eHelper.mapSavesInput(params.saves);
     const skills = Pf2eHelper.mapSkillsInput(params.skills);
     const abilities = Pf2eHelper.mapAbilitiesInput(params.abilities);
@@ -53,7 +59,7 @@ export class Pf2eHelper extends FoundryHelper {
     if (image)
       actorData.img = `${Config.DEFAULTS.TOKEN_IMAGE_FOLDER}/${image.fileName}`;
 
-    const actor = await Pf2eHelper.createActor(
+    const actor = await FoundryHelper.createActor(
       {
         name,
         type: 'npc',
@@ -125,7 +131,10 @@ export class Pf2eHelper extends FoundryHelper {
     }, {} as Pf2eSavesInput);
   }
 
-  private static mapDetailsInput(details: Partial<Pf2eNpcOutputParams>): any {
+  private static mapDetailsInput(
+    details: Partial<Pf2eNpcOutputParams>,
+    privateNotes: string = '',
+  ): any {
     const alignment = { value: details.alignment?.toUpperCase() ?? 'n' };
     const publicNotes = `<p>${details.appearance}</p><hr /><p>${details.backstory}</p>`;
     const blurb = `Level ${details.level ?? 1} ${details.race ?? 'Unknown'} ${
@@ -142,6 +151,7 @@ export class Pf2eHelper extends FoundryHelper {
     return {
       alignment,
       publicNotes,
+      privateNotes,
       blurb,
       level,
       source,
@@ -248,5 +258,17 @@ export class Pf2eHelper extends FoundryHelper {
         ui.notifications?.error(err);
       }
     }
+  }
+
+  public static createNPCSytemMessage(settings: Pf2eNpcSettings) {
+    const schema = FoundryHelper.applySettingsToSchema(
+      schemas.pf2e.npc,
+      settings.properties,
+    );
+    console.log(schema);
+    console.log(JSON.stringify(schema));
+    return `You are an assistant GM for a Pathfinder 2e Tabletop RPG. The GM will ask you to generate an NPC with certain qualities and you will return a response in JSON format, using the schema provided. Any fields that are not specified by the user's description should be generated intelligently. MOST IMPORTANTLY - an NPC's skills should be appropriate for their level. For example, an NPC below level 10 should not have ANY legendary skills. Try to avoid giving the characters names that already exist in copyrighted works. Here is the schema: ${JSON.stringify(
+      JSON.stringify(schema),
+    )}.`;
   }
 }
